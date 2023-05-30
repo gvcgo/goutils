@@ -54,7 +54,7 @@ func (that *Crypt) AesDecrypt(crypted []byte) ([]byte, error) {
 }
 
 func DecodeBase64(str string) (res string) {
-	count := len(str) % 4
+	count := (4 - len(str)%4)
 	for i := 0; i < count; i++ {
 		str += "="
 	}
