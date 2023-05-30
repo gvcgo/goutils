@@ -55,8 +55,10 @@ func (that *Crypt) AesDecrypt(crypted []byte) ([]byte, error) {
 
 func DecodeBase64(str string) (res string) {
 	count := (4 - len(str)%4)
-	for i := 0; i < count; i++ {
-		str += "="
+	if count > 0 {
+		for i := 0; i < count; i++ {
+			str += "="
+		}
 	}
 	if s, err := base64.StdEncoding.DecodeString(str); err == nil {
 		res = string(s)
