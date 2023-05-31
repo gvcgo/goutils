@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -13,4 +14,14 @@ func PathIsExist(path string) (bool, error) {
 		return false, nil
 	}
 	return false, _err
+}
+
+func MakeDirs(dirs ...string) {
+	for _, d := range dirs {
+		if ok, _ := PathIsExist(d); !ok {
+			if err := os.MkdirAll(d, os.ModePerm); err != nil {
+				fmt.Println("mkdir failed: ", err)
+			}
+		}
+	}
 }
