@@ -1,4 +1,4 @@
-package utils
+package daemon
 
 import (
 	"fmt"
@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/utils"
 )
 
 const (
@@ -26,7 +29,7 @@ func NewDaemon() *Daemon {
 // for windows
 func (that *Daemon) SetWorkdir(d string) {
 	that.workdir = d
-	MakeDirs(d)
+	utils.MakeDirs(d)
 }
 
 // for windows
@@ -50,7 +53,7 @@ func (that *Daemon) getWinScriptPath() (fPath string) {
 		that.batName = getWinScriptName()
 	}
 	fPath = filepath.Join(that.workdir, that.batName)
-	if ok, _ := PathIsExist(fPath); !ok {
+	if ok, _ := utils.PathIsExist(fPath); !ok {
 		batStr := strings.Join(os.Args, " ")
 		os.WriteFile(fPath, []byte(batStr), os.ModePerm)
 	}
@@ -70,9 +73,9 @@ func (that *Daemon) Run() {
 	}
 	cmd.Env = append(os.Environ(), IsChildProcess)
 	if err := cmd.Start(); err != nil {
-		fmt.Printf("start %s failed, error: %v\n", os.Args[0], err)
+		gtui.SPrintErrorf("start %s failed, error: %v\n", os.Args[0], err)
 		os.Exit(1)
 	}
-	fmt.Printf("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid)
+	gtui.SPrintSuccess("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid)
 	os.Exit(0)
 }
