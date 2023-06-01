@@ -76,6 +76,6 @@ func (that *Daemon) Run() {
 		gtui.SPrintErrorf("start %s failed, error: %v\n", os.Args[0], err)
 		os.Exit(1)
 	}
-	gtui.SPrintSuccess("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid)
+	gtui.SPrintSuccessf("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid)
 	os.Exit(0)
 }

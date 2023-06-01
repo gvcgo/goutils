@@ -8,7 +8,7 @@ func PrintSuccess(v ...any) {
 	pterm.Success.Println(v...)
 }
 
-func SPrintSuccess(format string, v ...any) {
+func SPrintSuccessf(format string, v ...any) {
 	pterm.Success.Sprintfln(format, v...)
 }
 
@@ -21,7 +21,7 @@ func SPrintErrorf(format string, v ...any) {
 }
 
 func PrintInfo(v ...any) {
-	pterm.Error.Println(v...)
+	pterm.Info.Println(v...)
 }
 
 func SPrintInfof(format string, v ...any) {
