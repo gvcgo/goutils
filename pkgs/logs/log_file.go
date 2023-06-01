@@ -6,6 +6,7 @@ import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/v2/os/glog"
 	"github.com/moqsien/goutils/pkgs/gtui"
+	utils "github.com/moqsien/goutils/pkgs/gutils"
 )
 
 var (
@@ -20,6 +21,7 @@ func init() {
 }
 
 func SetLogger(logDir string) {
+	utils.MakeDirs(logDir)
 	if Logger != nil && logDir != "" {
 		Logger.SetConfigWithMap(g.Map{
 			"path":              logDir,

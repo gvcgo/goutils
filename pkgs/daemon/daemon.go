@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/moqsien/goutils/pkgs/gtui"
-	"github.com/moqsien/goutils/pkgs/utils"
+	utils "github.com/moqsien/goutils/pkgs/gutils"
 )
 
 const (

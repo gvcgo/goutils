@@ -8,7 +8,7 @@ import (
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
-	"github.com/moqsien/goutils/pkgs/utils"
+	utils "github.com/moqsien/goutils/pkgs/gutils"
 )
 
 type KoanfJSON struct{}

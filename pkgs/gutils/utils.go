@@ -1,7 +1,8 @@
-package utils
+package gutils
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -25,3 +26,11 @@ func MakeDirs(dirs ...string) {
 		}
 	}
 }
+
+func Closeq(v any) {
+	if c, ok := v.(io.Closer); ok {
+		silently(c.Close())
+	}
+}
+
+func silently(_ ...any) {}
