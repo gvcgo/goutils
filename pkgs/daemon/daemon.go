@@ -73,9 +73,9 @@ func (that *Daemon) Run() {
 	}
 	cmd.Env = append(os.Environ(), IsChildProcess)
 	if err := cmd.Start(); err != nil {
-		gtui.SPrintErrorf("start %s failed, error: %v\n", os.Args[0], err)
+		gtui.PrintErrorf("start %s failed, error: %v\n", os.Args[0], err)
 		os.Exit(1)
 	}
-	gtui.SPrintSuccessf("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid)
+	gtui.PrintSuccessf("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid)
 	os.Exit(0)
 }
