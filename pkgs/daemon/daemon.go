@@ -48,34 +48,40 @@ func getWinScriptName() string {
 	return "daemon_script.bat"
 }
 
-func (that *Daemon) getWinScriptPath() (fPath string) {
+func (that *Daemon) getWinScriptPath(osArgs ...string) (fPath string) {
 	if that.batName == "" {
 		that.batName = getWinScriptName()
 	}
 	fPath = filepath.Join(that.workdir, that.batName)
 	if ok, _ := utils.PathIsExist(fPath); !ok {
-		batStr := strings.Join(os.Args, " ")
+		batStr := strings.Join(osArgs, " ")
 		os.WriteFile(fPath, []byte(batStr), os.ModePerm)
 	}
 	return fPath
 }
 
-func (that *Daemon) Run() {
+func (that *Daemon) Run(osArgs ...string) {
+	if len(osArgs) == 0 {
+		panic("no osArgs specified")
+	}
 	if isChild := os.Getenv(IsChildEnv); isChild != "" {
 		return
 	}
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		batFilePath := that.getWinScriptPath()
+		batFilePath := that.getWinScriptPath(osArgs...)
 		cmd = exec.Command("powershell", "Start-Process", "-WindowStyle", "hidden", "-FilePath", batFilePath)
 	} else {
-		cmd = exec.Command(os.Args[0], os.Args[1:]...)
+		cmd = exec.Command(osArgs[0], osArgs[1:]...)
 	}
 	cmd.Env = append(os.Environ(), IsChildProcess)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
 	if err := cmd.Start(); err != nil {
-		gtui.PrintErrorf("start %s failed, error: %v\n", os.Args[0], err)
+		gtui.PrintErrorf("start %s failed, error: %v\n", osArgs[0], err)
 		os.Exit(1)
 	}
-	gtui.PrintSuccessf("%s [PID] %d running...\n", os.Args[0], cmd.Process.Pid)
+	gtui.PrintSuccessf("%s [PID] %d running...\n", osArgs[0], cmd.Process.Pid)
 	os.Exit(0)
 }
