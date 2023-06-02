@@ -9,7 +9,7 @@ func PrintSuccess(v ...any) {
 }
 
 func PrintSuccessf(format string, v ...any) {
-	pterm.Success.Printf(format, v...)
+	pterm.Success.Printfln(format, v...)
 }
 
 func PrintError(v ...any) {
@@ -17,7 +17,7 @@ func PrintError(v ...any) {
 }
 
 func PrintErrorf(format string, v ...any) {
-	pterm.Error.Printf(format, v...)
+	pterm.Error.Printfln(format, v...)
 }
 
 func PrintInfo(v ...any) {
@@ -25,7 +25,7 @@ func PrintInfo(v ...any) {
 }
 
 func PrintInfof(format string, v ...any) {
-	pterm.Info.Printf(format, v...)
+	pterm.Info.Printfln(format, v...)
 }
 
 func PrintWarning(v ...any) {
@@ -33,7 +33,7 @@ func PrintWarning(v ...any) {
 }
 
 func PrintWarningf(format string, v ...any) {
-	pterm.Warning.Printf(format, v...)
+	pterm.Warning.Printfln(format, v...)
 }
 
 func PrintFatal(v ...any) {
@@ -41,5 +41,5 @@ func PrintFatal(v ...any) {
 }
 
 func PrintFatalf(format string, v ...any) {
-	pterm.Fatal.WithFatal(false).Printf(format, v...)
+	pterm.Fatal.WithFatal(false).Printfln(format, v...)
 }
