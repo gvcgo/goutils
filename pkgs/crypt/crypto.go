@@ -4,11 +4,21 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"encoding/base64"
+	"fmt"
 )
 
 type Crypt struct {
 	key []byte
+}
+
+func NewCrypt(password string) (c *Crypt) {
+	has := md5.Sum([]byte(password))
+	c = &Crypt{
+		key: []byte(fmt.Sprintf("%x", has)),
+	}
+	return
 }
 
 var DefaultCrypt = &Crypt{
