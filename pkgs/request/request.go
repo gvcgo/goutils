@@ -1,10 +1,8 @@
 package request
 
 import (
-	"context"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,13 +11,10 @@ import (
 	"strings"
 	"time"
 
-	sproxy "github.com/Asutorufa/yuhaiin/pkg/net/interfaces/proxy"
-	"github.com/Asutorufa/yuhaiin/pkg/node/register"
-	"github.com/Asutorufa/yuhaiin/pkg/protos/node/point"
-	"github.com/Asutorufa/yuhaiin/pkg/protos/node/protocol"
 	"github.com/go-resty/resty/v2"
 	"github.com/moqsien/goutils/pkgs/gtui"
 	utils "github.com/moqsien/goutils/pkgs/gutils"
+	nproxy "golang.org/x/net/proxy"
 )
 
 type Fetcher struct {
@@ -78,34 +73,10 @@ func (that *Fetcher) setProxy() {
 			that.client = that.client.SetProxy(that.Proxy)
 		case "socks5":
 			httpClient := that.client.GetClient()
-			if transport, ok := httpClient.Transport.(*http.Transport); ok {
-				node := &point.Point{
-					Protocols: []*protocol.Protocol{
-						{
-							Protocol: &protocol.Protocol_Simple{
-								Simple: &protocol.Simple{
-									Host:             host,
-									Port:             int32(port),
-									PacketConnDirect: true,
-								},
-							},
-						},
-						{
-							Protocol: &protocol.Protocol_Socks5{
-								Socks5: &protocol.Socks5{},
-							},
-						},
-					},
-				}
-				if proxy_result, err := register.Dialer(node); err == nil {
-					transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
-						address, err := sproxy.ParseAddress(sproxy.PaseNetwork(network), addr)
-						if err != nil {
-							return nil, fmt.Errorf("parse address failed: %w", err)
-						}
-						return proxy_result.Conn(ctx, address)
-					}
-				}
+			if dialer, err := nproxy.SOCKS5("tcp", fmt.Sprintf("%s:%d", host, port), nil, nproxy.Direct); err == nil {
+				httpClient.Transport = &http.Transport{Dial: dialer.Dial}
+			} else {
+				gtui.PrintError(err)
 			}
 		default:
 			gtui.PrintError(fmt.Sprintf("Unsupported proxy: %s", that.Proxy))
