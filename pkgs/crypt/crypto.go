@@ -21,6 +21,13 @@ func NewCrypt(password string) (c *Crypt) {
 	return
 }
 
+func NewCrptWithKey(key []byte) (c *Crypt) {
+	c = &Crypt{
+		key: key,
+	}
+	return
+}
+
 var DefaultCrypt = &Crypt{
 	key: []byte("x^)dixf&*1$free]"),
 }
