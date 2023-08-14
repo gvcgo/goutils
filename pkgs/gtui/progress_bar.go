@@ -2,13 +2,14 @@ package gtui
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/pterm/pterm"
 )
 
 const (
 	BarLength int    = 192
-	BarTitle  string = "[ GetFile|<%s %s/%sMB>]"
+	BarTitle  string = "[Download| %s <%s/%sMB>]"
 )
 
 /*
@@ -22,6 +23,7 @@ type ProgressBar struct {
 	CurrentReceived int
 	divideBy        int
 	writeCount      int64
+	lock            *sync.Mutex
 }
 
 func NewProgressBar(filename string, length int) (p *ProgressBar) {
@@ -35,6 +37,7 @@ func NewProgressBar(filename string, length int) (p *ProgressBar) {
 	total, current := p.calcSize()
 	p.Bar = pterm.DefaultProgressbar.WithTotal(BarLength).WithTitle(fmt.Sprintf(BarTitle, p.Filename, current, total)).WithShowCount(false).WithShowPercentage(true)
 	p.divideBy = length / BarLength
+	p.lock = &sync.Mutex{}
 	return
 }
 
@@ -56,8 +59,9 @@ func (that *ProgressBar) Write(p []byte) (n int, err error) {
 	if that.CurrentReceived == 0 {
 		that.Bar.Increment()
 	}
-	that.CurrentReceived += n
 	var increasement int
+	that.lock.Lock()
+	that.CurrentReceived += n
 	if that.CurrentReceived == that.ContentLength {
 		increasement = that.Bar.Total - that.Bar.Current
 	} else {
@@ -68,6 +72,8 @@ func (that *ProgressBar) Write(p []byte) (n int, err error) {
 		that.Bar.UpdateTitle(fmt.Sprintf(BarTitle, that.Filename, current, total))
 	}
 	that.writeCount += 1
+	that.lock.Unlock()
+
 	if increasement > 0 {
 		that.Bar.Add(increasement)
 	}

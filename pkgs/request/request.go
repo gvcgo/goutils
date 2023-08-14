@@ -260,7 +260,7 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 		that.lock.Unlock()
 		if res.RawResponse.StatusCode != 200 && written < int64(range_end-range_begin) {
 			gtui.PrintFatal(fmt.Sprintf("Download failed, status code: %d", res.RawResponse.StatusCode))
-			os.RemoveAll(that.getPartDir(localPath))
+			gtui.PrintWarning(fmt.Sprintf("Please remove temp files manually: %s.", that.getPartDir(localPath)))
 			os.Exit(1)
 		}
 	} else {

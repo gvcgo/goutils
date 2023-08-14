@@ -16,6 +16,8 @@ func main() {
 	f := request.NewFetcher()
 	// f.SetUrl("https://golang.google.cn/dl/go1.21.0.linux-amd64.tar.gz")
 	f.SetUrl("https://mirrors.aliyun.com/golang/go1.21.0.linux-amd64.tar.gz?spm=a2c6h.25603864.0.0.33337c45JOHx3F")
-	f.SetThreadNum(4)
+	// f.SetUrl("https://mirrors.nju.edu.cn/golang/go1.21.0.linux-amd64.tar.gz")
+	// f.SetUrl("https://mirrors.ustc.edu.cn/golang/go1.21.0.linux-amd64.tar.gz")
+	f.SetThreadNum(8)
 	f.Download(`C:\Users\moqsien\data\projects\go\src\goutils\go1.21.0.linux-amd64.tar.gz`, true)
 }
