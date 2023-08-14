@@ -189,7 +189,7 @@ func (that *Fetcher) singleDownload(localPath string) (size int64) {
 		// io.Copy reads maximum 32kb size, it is perfect for large file download too
 		written, err := io.Copy(io.MultiWriter(outFile, that.bar), res.RawResponse.Body)
 		if err != nil {
-			fmt.Println(err)
+			gtui.PrintError(err)
 			return
 		}
 		size = written
@@ -200,7 +200,13 @@ func (that *Fetcher) singleDownload(localPath string) (size int64) {
 }
 
 func (that *Fetcher) getPartFileName(localPath string, id int) string {
-	return fmt.Sprintf("%s.part%v", localPath, id)
+	filename := that.parseFilename(localPath)
+	filename = fmt.Sprintf("%s.part%v", filename, id)
+	return filepath.Join(that.getPartDir(localPath), filename)
+}
+
+func (that *Fetcher) getPartDir(localPath string) string {
+	return filepath.Join(filepath.Dir(localPath), "temp_part_xxx")
 }
 
 func (that *Fetcher) mergeFile(localPath string) error {
@@ -252,15 +258,20 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 		that.lock.Lock()
 		that.size += written
 		that.lock.Unlock()
+		if res.RawResponse.StatusCode != 200 && written < int64(range_end-range_begin) {
+			gtui.PrintFatal(fmt.Sprintf("Download failed, status code: %d", res.RawResponse.StatusCode))
+			os.RemoveAll(that.getPartDir(localPath))
+			os.Exit(1)
+		}
 	} else {
-		fmt.Println(err)
+		gtui.PrintError(err)
 	}
 }
 
 func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 	part_size := content_size / that.threadNum
 
-	part_dir := filepath.Join(filepath.Dir(localPath), "temp_part_xxx")
+	part_dir := that.getPartDir(localPath)
 	os.Mkdir(part_dir, 0777)
 	defer os.RemoveAll(part_dir)
 
@@ -271,6 +282,7 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 
 	for i := 0; i < that.threadNum; i++ {
 		// concurrency request, i for thread id
+		id := i
 		go func(i, range_begin int) {
 			defer waitgroup.Done()
 			range_end := range_begin + part_size
@@ -278,7 +290,7 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 				range_end = content_size
 			} // for the last data block
 			that.partDownload(localPath, range_begin, range_end, i)
-		}(i, range_init)
+		}(id, range_init)
 
 		range_init += part_size + 1
 	}
@@ -312,13 +324,13 @@ func (that *Fetcher) Download(localPath string, force ...bool) (size int64) {
 	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
 		content_length = res.RawResponse.ContentLength
 		if content_length == 0 {
-			fmt.Println("Content-Length is zero.")
+			gtui.PrintError("Content-Length is zero.")
 			return
 		}
 		that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
 		that.bar.Start()
 	} else {
-		fmt.Println(err)
+		gtui.PrintError(err)
 		return
 	}
 
