@@ -301,7 +301,7 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 	return nil
 }
 
-func (that *Fetcher) Download(localPath string, force ...bool) (size int64) {
+func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64) {
 	if that.client == nil {
 		gtui.PrintError("Client is nil.")
 		return
@@ -320,24 +320,25 @@ func (that *Fetcher) Download(localPath string, force ...bool) (size int64) {
 		os.RemoveAll(localPath)
 	}
 
-	var content_length int64
-	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
-		content_length = res.RawResponse.ContentLength
-		if content_length == 0 {
-			gtui.PrintError("Content-Length is zero.")
-			return
-		}
-		that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
-		that.bar.Start()
-	} else {
-		gtui.PrintError(err)
-		return
-	}
-
 	if that.threadNum <= 1 {
 		size = that.singleDownload(localPath)
 	} else {
+		var content_length int64
+		if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
+			content_length = res.RawResponse.ContentLength
+			if content_length == 0 {
+				gtui.PrintError("Content-Length is zero.")
+				return
+			}
+			that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
+			that.bar.Start()
+		} else {
+			gtui.PrintError(err)
+			return
+		}
+
 		os.RemoveAll(that.getPartDir(localPath))
+
 		that.multiDownload(localPath, int(content_length))
 		size = that.size
 	}
