@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -27,10 +28,14 @@ type Fetcher struct {
 	NoRedirect   bool
 	client       *resty.Client
 	proxyEnvName string
+	threadNum    int
+	size         int64
+	bar          *gtui.ProgressBar
+	lock         *sync.Mutex
 }
 
 func NewFetcher() *Fetcher {
-	return &Fetcher{client: resty.New(), proxyEnvName: "GVC_DEFAULT_PROXY"}
+	return &Fetcher{client: resty.New(), proxyEnvName: "GVC_DEFAULT_PROXY", lock: &sync.Mutex{}}
 }
 
 func (that *Fetcher) setHeaders() {
@@ -63,6 +68,14 @@ func (that *Fetcher) SetProxyEnvName(name string) {
 	if name != "" {
 		that.proxyEnvName = name
 	}
+}
+
+func (that *Fetcher) SetThreadNum(num int) {
+	that.threadNum = num
+}
+
+func (that *Fetcher) SetUrl(url string) {
+	that.Url = url
 }
 
 func (that *Fetcher) setProxy() {
@@ -125,50 +138,6 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 	return
 }
 
-func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64) {
-	if that.client == nil {
-		gtui.PrintError("Client is nil.")
-		return
-	} else {
-		that.setMisc()
-	}
-	forceToDownload := false
-	if len(force) > 0 && force[0] {
-		forceToDownload = true
-	}
-	if ok, _ := utils.PathIsExist(localPath); ok && !forceToDownload {
-		gtui.PrintInfo("File already exists.")
-		return 100
-	}
-	if forceToDownload {
-		os.RemoveAll(localPath)
-	}
-	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
-		outFile, err := os.Create(localPath)
-		if err != nil {
-			gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
-			return
-		}
-		defer utils.Closeq(outFile)
-
-		defer utils.Closeq(res.RawResponse.Body)
-		var dst io.Writer
-		bar := gtui.NewProgressBar(that.parseFilename(localPath), int(res.RawResponse.ContentLength))
-		bar.Start()
-		dst = io.MultiWriter(outFile, bar)
-		// io.Copy reads maximum 32kb size, it is perfect for large file download too
-		written, err := io.Copy(dst, res.RawResponse.Body)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		size = written
-	} else {
-		fmt.Println(err)
-	}
-	return
-}
-
 func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 	if that.client == nil {
 		gtui.PrintError("Client is nil.")
@@ -203,6 +172,161 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 		size = written
 	} else {
 		fmt.Println(err)
+	}
+	return
+}
+
+func (that *Fetcher) singleDownload(localPath string) (size int64) {
+	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
+		outFile, err := os.Create(localPath)
+		if err != nil {
+			gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			return
+		}
+		defer utils.Closeq(outFile)
+		defer utils.Closeq(res.RawResponse.Body)
+
+		// io.Copy reads maximum 32kb size, it is perfect for large file download too
+		written, err := io.Copy(io.MultiWriter(outFile, that.bar), res.RawResponse.Body)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		size = written
+	} else {
+		fmt.Println(err)
+	}
+	return
+}
+
+func (that *Fetcher) getPartFileName(localPath string, id int) string {
+	return fmt.Sprintf("%s.part%v", localPath, id)
+}
+
+func (that *Fetcher) mergeFile(localPath string) error {
+	dest_file, err := os.OpenFile(localPath, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer utils.Closeq(dest_file)
+
+	for i := 0; i < that.threadNum; i++ {
+		partfile_name := that.getPartFileName(localPath, i)
+		part_file, err := os.Open(partfile_name)
+		if err != nil {
+			return err
+		}
+		io.Copy(dest_file, part_file)
+		utils.Closeq(part_file)
+		os.Remove(partfile_name)
+	}
+	return nil
+}
+
+func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id int) {
+	if range_begin >= range_end {
+		return
+	}
+
+	that.client = resty.New()
+	that.setMisc()
+	client := that.client
+	that.client = nil
+
+	client.SetHeader("Range", fmt.Sprintf("bytes=%d-%d", range_begin, range_end))
+	if res, err := client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
+		outFile, err := os.Create(that.getPartFileName(localPath, id))
+		if err != nil {
+			gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			return
+		}
+		defer utils.Closeq(outFile)
+		defer utils.Closeq(res.RawResponse.Body)
+
+		// io.Copy reads maximum 32kb size, it is perfect for large file download too
+		written, err := io.Copy(io.MultiWriter(outFile, that.bar), res.RawResponse.Body)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		that.lock.Lock()
+		that.size += written
+		that.lock.Unlock()
+	} else {
+		fmt.Println(err)
+	}
+}
+
+func (that *Fetcher) multiDownload(localPath string, content_size int) error {
+	part_size := content_size / that.threadNum
+
+	part_dir := filepath.Join(filepath.Dir(localPath), "temp_part_xxx")
+	os.Mkdir(part_dir, 0777)
+	defer os.RemoveAll(part_dir)
+
+	var waitgroup sync.WaitGroup
+	waitgroup.Add(that.threadNum)
+
+	range_init := 0
+
+	for i := 0; i < that.threadNum; i++ {
+		// concurrency request, i for thread id
+		go func(i, range_begin int) {
+			defer waitgroup.Done()
+			range_end := range_begin + part_size
+			if i == that.threadNum-1 {
+				range_end = content_size
+			} // for the last data block
+			that.partDownload(localPath, range_begin, range_end, i)
+		}(i, range_init)
+
+		range_init += part_size + 1
+	}
+	waitgroup.Wait()
+
+	// merge
+	that.mergeFile(localPath)
+	return nil
+}
+
+func (that *Fetcher) Download(localPath string, force ...bool) (size int64) {
+	if that.client == nil {
+		gtui.PrintError("Client is nil.")
+		return
+	} else {
+		that.setMisc()
+	}
+	forceToDownload := false
+	if len(force) > 0 && force[0] {
+		forceToDownload = true
+	}
+	if ok, _ := utils.PathIsExist(localPath); ok && !forceToDownload {
+		gtui.PrintInfo("File already exists.")
+		return 100
+	}
+	if forceToDownload {
+		os.RemoveAll(localPath)
+	}
+
+	var content_length int64
+	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
+		content_length = res.RawResponse.ContentLength
+		if content_length == 0 {
+			fmt.Println("Content-Length is zero.")
+			return
+		}
+		that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
+		that.bar.Start()
+	} else {
+		fmt.Println(err)
+		return
+	}
+
+	if that.threadNum <= 1 {
+		size = that.singleDownload(localPath)
+	} else {
+		that.multiDownload(localPath, int(content_length))
+		size = that.size
 	}
 	return
 }
