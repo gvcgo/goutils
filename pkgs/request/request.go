@@ -337,6 +337,7 @@ func (that *Fetcher) Download(localPath string, force ...bool) (size int64) {
 	if that.threadNum <= 1 {
 		size = that.singleDownload(localPath)
 	} else {
+		os.RemoveAll(that.getPartDir(localPath))
 		that.multiDownload(localPath, int(content_length))
 		size = that.size
 	}
