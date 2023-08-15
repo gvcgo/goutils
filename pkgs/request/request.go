@@ -119,11 +119,10 @@ func (that *Fetcher) RemoveProxy() {
 
 func (that *Fetcher) Get() (r *resty.Response) {
 	if that.client == nil {
-		gtui.PrintError("Client is nil.")
-		return
-	} else {
-		that.setMisc()
+		that.client = resty.New()
 	}
+	that.setMisc()
+
 	if resp, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err != nil {
 		fmt.Println(err)
 	} else {
@@ -140,11 +139,10 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 
 func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 	if that.client == nil {
-		gtui.PrintError("Client is nil.")
-		return
-	} else {
-		that.setMisc()
+		that.client = resty.New()
 	}
+	that.setMisc()
+
 	forceToDownload := false
 	if len(force) > 0 && force[0] {
 		forceToDownload = true
@@ -233,7 +231,6 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 	if range_begin >= range_end {
 		return
 	}
-
 	that.client = resty.New()
 	that.setMisc()
 	client := that.client
@@ -303,11 +300,10 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 
 func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64) {
 	if that.client == nil {
-		gtui.PrintError("Client is nil.")
-		return
-	} else {
-		that.setMisc()
+		that.client = resty.New()
 	}
+	that.setMisc()
+
 	forceToDownload := false
 	if len(force) > 0 && force[0] {
 		forceToDownload = true
@@ -347,11 +343,10 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 
 func (that *Fetcher) Post() (r *resty.Response) {
 	if that.client == nil {
-		gtui.PrintError("Client is nil.")
-		return
-	} else {
-		that.setMisc()
+		that.client = resty.New()
 	}
+	that.setMisc()
+
 	if resp, err := that.client.SetDoNotParseResponse(true).R().SetBody(that.PostBody).Post(that.Url); err != nil {
 		fmt.Println(err)
 		return
