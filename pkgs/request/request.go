@@ -315,24 +315,23 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	if forceToDownload {
 		os.RemoveAll(localPath)
 	}
+	var content_length int64
+	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
+		content_length = res.RawResponse.ContentLength
+		if content_length == 0 {
+			gtui.PrintError("Content-Length is zero.")
+			return
+		}
+		that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
+		that.bar.Start()
+	} else {
+		gtui.PrintError(err)
+		return
+	}
 
 	if that.threadNum <= 1 {
 		size = that.singleDownload(localPath)
 	} else {
-		var content_length int64
-		if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
-			content_length = res.RawResponse.ContentLength
-			if content_length == 0 {
-				gtui.PrintError("Content-Length is zero.")
-				return
-			}
-			that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
-			that.bar.Start()
-		} else {
-			gtui.PrintError(err)
-			return
-		}
-
 		os.RemoveAll(that.getPartDir(localPath))
 
 		that.multiDownload(localPath, int(content_length))
