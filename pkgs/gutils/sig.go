@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 /*
@@ -14,14 +13,19 @@ Listen Signal: Ctrl+C
 type CtrlCSignal struct{}
 
 func (that *CtrlCSignal) exitHandle(exitChan chan os.Signal) {
-	for {
-		select {
-		case <-exitChan:
-			fmt.Println("Exiting...")
-			os.Exit(1)
-		default:
-			time.Sleep(30 * time.Millisecond)
-		}
+	// for {
+	// 	select {
+	// 	case <-exitChan:
+	// 		fmt.Println("Exiting...")
+	// 		os.Exit(1)
+	// 	default:
+	// 		time.Sleep(30 * time.Millisecond)
+	// 	}
+	// }
+
+	for range exitChan {
+		fmt.Println("\nExiting...")
+		os.Exit(1)
 	}
 }
 
