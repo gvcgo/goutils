@@ -318,8 +318,8 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	var content_length int64
 	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
 		content_length = res.RawResponse.ContentLength
-		if content_length == 0 {
-			gtui.PrintError("Content-Length is zero.")
+		if content_length <= 0 {
+			gtui.PrintError("Content-Length is invalid.")
 			return
 		}
 		that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
