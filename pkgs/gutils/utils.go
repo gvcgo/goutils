@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	"net/url"
 	"os"
 	"strings"
 
@@ -98,5 +99,20 @@ func ComputeSum(fpath, sumType string) (sumStr string) {
 	}
 
 	sumStr = hex.EncodeToString(h.Sum(nil))
+	return
+}
+
+func VerifyUrls(rawUrl string) (r bool) {
+	r = true
+	_, err := url.ParseRequestURI(rawUrl)
+	if err != nil {
+		r = false
+		return
+	}
+	url, err := url.Parse(rawUrl)
+	if err != nil || url.Scheme == "" || url.Host == "" {
+		r = false
+		return
+	}
 	return
 }
