@@ -13,6 +13,11 @@ func NewSelect(opts []string, handle HandleSelected) *Select {
 	return &Select{OptionList: opts, Handle: handle}
 }
 
+func (that *Select) SetDefaultText(text string) {
+	selector := pterm.DefaultInteractiveSelect
+	selector.DefaultText = text
+}
+
 func (that *Select) Start() string {
 	selectedOpt, err := pterm.DefaultInteractiveSelect.WithOptions(that.OptionList).Show()
 	if err != nil {
