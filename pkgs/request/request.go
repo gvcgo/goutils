@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/gtui"
 	utils "github.com/moqsien/goutils/pkgs/gutils"
 	nproxy "golang.org/x/net/proxy"
@@ -30,6 +31,8 @@ type Fetcher struct {
 	proxyEnvName string
 	threadNum    int
 	size         int64
+	checkSum     string
+	checkSumType string
 	bar          *gtui.ProgressBar
 	lock         *sync.Mutex
 }
@@ -76,6 +79,11 @@ func (that *Fetcher) SetThreadNum(num int) {
 
 func (that *Fetcher) SetUrl(url string) {
 	that.Url = url
+}
+
+func (that *Fetcher) SetCheckSum(checkSum, checkSumType string) {
+	that.checkSum = checkSum
+	that.checkSumType = checkSumType
 }
 
 func (that *Fetcher) setProxy() {
@@ -319,8 +327,8 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
 		content_length = res.RawResponse.ContentLength
 		if content_length <= 0 {
-			gtui.PrintError("Content-Length is invalid.")
-			return
+			gtui.PrintWarning("Content-Length is invalid.")
+			return that.GetFile(localPath, force...)
 		}
 		that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
 		that.bar.Start()
@@ -338,6 +346,34 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 		size = that.size
 	}
 	return
+}
+
+func (that *Fetcher) checkFileSum(fPath string) bool {
+	if that.checkSum != "" && that.checkSumType != "" {
+		return utils.CheckSum(fPath, that.checkSumType, that.checkSum)
+	}
+	return true
+}
+
+func (that *Fetcher) DownloadAndDecompress(localPath, dstDir string, force ...bool) error {
+	if size := that.GetAndSaveFile(localPath, force...); size > 0 {
+		if !that.checkFileSum(localPath) {
+			gtui.PrintError("CheckSum failed.")
+			os.RemoveAll(localPath)
+			return fmt.Errorf("checksum failed")
+		}
+		if a, err := archiver.NewArchiver(localPath, dstDir); err == nil {
+			_, err = a.UnArchive()
+			if err != nil {
+				gtui.PrintError("Unarchive file failed.")
+				os.RemoveAll(localPath)
+			}
+			return err
+		} else {
+			return err
+		}
+	}
+	return fmt.Errorf("download failed")
 }
 
 func (that *Fetcher) Post() (r *resty.Response) {
