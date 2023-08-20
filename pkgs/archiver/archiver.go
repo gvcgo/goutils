@@ -7,7 +7,7 @@ import (
 
 	"github.com/moqsien/goutils/pkgs/gtui"
 	"github.com/moqsien/goutils/pkgs/gutils"
-	"golift.io/xtractr"
+	"github.com/moqsien/xtractr"
 )
 
 type Archiver struct {

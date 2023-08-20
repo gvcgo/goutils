@@ -9,10 +9,10 @@ require (
 	github.com/gogf/gf/v2 v2.4.1
 	github.com/knadh/koanf v1.5.0
 	github.com/moqsien/goktrl v1.3.7
+	github.com/moqsien/xtractr v0.0.1
 	github.com/pterm/pterm v0.12.62
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
 	golang.org/x/net v0.10.0
-	golift.io/xtractr v0.2.2
 )
 
 require (
@@ -25,12 +25,11 @@ require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aquasecurity/table v1.8.0 // indirect
 	github.com/bodgit/plumbing v1.3.0 // indirect
-	github.com/bodgit/sevenzip v1.4.0 // indirect
+	github.com/bodgit/sevenzip v1.4.2 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/bytedance/sonic v1.8.8 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
-	github.com/connesc/cipherio v0.2.1 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
@@ -51,8 +50,8 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kdomanski/iso9660 v0.3.3 // indirect
-	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/kdomanski/iso9660 v0.3.5 // indirect
+	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
