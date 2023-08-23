@@ -1,6 +1,7 @@
 package gutils
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
@@ -10,6 +11,9 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/moqsien/goutils/pkgs/gtui"
@@ -115,4 +119,70 @@ func VerifyUrls(rawUrl string) (r bool) {
 		return
 	}
 	return
+}
+
+const (
+	Win     string = "win"
+	Zsh     string = "zsh"
+	Bash    string = "bash"
+	Windows string = "windows"
+	Darwin  string = "darwin"
+	Linux   string = "linux"
+)
+
+func GetHomeDir() string {
+	home, _ := os.UserHomeDir()
+	return home
+}
+
+func GetShell() (shell string) {
+	if runtime.GOOS == Windows {
+		return Win
+	}
+	s := os.Getenv("SHELL")
+	if strings.Contains(s, "zsh") {
+		return Zsh
+	}
+	return Bash
+}
+
+func GetShellRcFile() (rc string) {
+	shell := GetShell()
+	switch shell {
+	case Zsh:
+		rc = filepath.Join(GetHomeDir(), ".zshrc")
+	case Bash:
+		rc = filepath.Join(GetHomeDir(), ".bashrc")
+	default:
+		rc = Win
+	}
+	return
+}
+
+func FlushPathEnvForUnix() (err error) {
+	if runtime.GOOS != Windows {
+		err = exec.Command("source", GetShellRcFile()).Run()
+	}
+	return
+}
+
+func ExecuteSysCommand(collectOutput bool, args ...string) (*bytes.Buffer, error) {
+	var cmd *exec.Cmd
+	if runtime.GOOS == Windows {
+		args = append([]string{"/c"}, args...)
+		cmd = exec.Command("cmd", args...)
+	} else {
+		FlushPathEnvForUnix()
+		cmd = exec.Command(args[0], args[1:]...)
+	}
+	cmd.Env = os.Environ()
+	var output bytes.Buffer
+	if collectOutput {
+		cmd.Stdout = &output
+	} else {
+		cmd.Stdout = os.Stdout
+	}
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	return &output, cmd.Run()
 }
