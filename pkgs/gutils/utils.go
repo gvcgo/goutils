@@ -166,7 +166,7 @@ func FlushPathEnvForUnix() (err error) {
 	return
 }
 
-func ExecuteSysCommand(collectOutput bool, args ...string) (*bytes.Buffer, error) {
+func ExecuteSysCommand(collectOutput bool, workDir string, args ...string) (*bytes.Buffer, error) {
 	var cmd *exec.Cmd
 	if runtime.GOOS == Windows {
 		args = append([]string{"/c"}, args...)
@@ -181,6 +181,9 @@ func ExecuteSysCommand(collectOutput bool, args ...string) (*bytes.Buffer, error
 		cmd.Stdout = &output
 	} else {
 		cmd.Stdout = os.Stdout
+	}
+	if workDir != "" {
+		cmd.Dir = workDir
 	}
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
