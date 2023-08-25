@@ -1,7 +1,9 @@
 package main
 
 import (
-	"github.com/moqsien/goutils/pkgs/archiver"
+	"fmt"
+
+	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
 func main() {
@@ -20,5 +22,7 @@ func main() {
 	// f.SetUrl("https://mirrors.ustc.edu.cn/golang/go1.21.0.linux-amd64.tar.gz")
 	// f.SetThreadNum(8)
 	// f.GetAndSaveFile(`C:\Users\moqsien\data\projects\go\src\goutils\go1.21.0.linux-amd64.tar.gz`, true)
-	archiver.ArchiverTest()
+	// archiver.ArchiverTest()
+	uuid := gutils.NewUUID()
+	fmt.Println(uuid.String())
 }
