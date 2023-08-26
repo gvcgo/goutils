@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	mrand "math/rand"
 	"net/url"
 	"os"
 	"os/exec"
@@ -208,4 +209,14 @@ func NewUUID() *UUID {
 
 func (u *UUID) String() string {
 	return fmt.Sprintf("%x-%x-%x-%x-%x", u[:4], u[4:6], u[6:8], u[8:10], u[10:])
+}
+
+func RandomString(slength int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, slength)
+	for i := range s {
+		s[i] = letters[mrand.Intn(len(letters))]
+	}
+	return string(s)
 }
