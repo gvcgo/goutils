@@ -7,6 +7,9 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"fmt"
+	"strings"
+
+	"github.com/moqsien/goutils/pkgs/gtui"
 )
 
 type Crypt struct {
@@ -70,15 +73,28 @@ func (that *Crypt) AesDecrypt(crypted []byte) ([]byte, error) {
 	return origData, nil
 }
 
-func DecodeBase64(str string) (res string) {
-	count := (4 - len(str)%4)
+func DecodeBase64(rawStr string) (res string) {
+	rawStr = strings.TrimSpace(rawStr)
+	count := (4 - len(rawStr)%4)
+	if count > 0 && strings.HasSuffix(rawStr, "=") {
+		rawStr = strings.TrimSuffix(rawStr, "=")
+		count = (4 - len(rawStr)%4)
+	}
+
 	if count < 4 {
 		for i := 0; i < count; i++ {
-			str += "="
+			rawStr += "="
 		}
 	}
-	if s, err := base64.StdEncoding.DecodeString(str); err == nil {
+	if s, err := base64.StdEncoding.DecodeString(rawStr); err == nil {
 		res = string(s)
+	} else {
+		gtui.PrintError(err)
+		if len(rawStr) > 5 {
+			fmt.Println(rawStr[len(rawStr)-5:])
+		} else {
+			fmt.Println(rawStr)
+		}
 	}
 	return
 }
