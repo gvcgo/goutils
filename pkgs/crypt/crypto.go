@@ -91,6 +91,11 @@ func DecodeBase64(rawStr string) (res string) {
 	if s, err := base64.StdEncoding.DecodeString(rawStr); err == nil {
 		res = string(s)
 	} else {
+		s, err = base64.RawStdEncoding.DecodeString(rawStr)
+		res = string(s)
+		if err == nil {
+			return
+		}
 		gtui.PrintError(err)
 		if len(rawStr) > 5 {
 			fmt.Println(rawStr[len(rawStr)-5:])

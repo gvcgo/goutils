@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/moqsien/goutils/pkgs/gutils"
@@ -25,4 +26,6 @@ func main() {
 	// archiver.ArchiverTest()
 	uuid := gutils.NewUUID()
 	fmt.Println(uuid.String())
+	s, err := base64.RawStdEncoding.DecodeString("Y2RuLmFwcHNmbHllci5jJSXvv71bJe+/vR9JSXvvv70l77+9")
+	fmt.Println(string(s), err)
 }
