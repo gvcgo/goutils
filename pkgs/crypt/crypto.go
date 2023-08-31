@@ -74,6 +74,8 @@ func (that *Crypt) AesDecrypt(crypted []byte) ([]byte, error) {
 }
 
 func DecodeBase64(rawStr string) (res string) {
+	rawStr = strings.ReplaceAll(rawStr, "-", "+")
+	rawStr = strings.ReplaceAll(rawStr, "_", "/")
 	rawStr = strings.TrimSpace(rawStr)
 	count := (4 - len(rawStr)%4)
 	if count > 0 && strings.HasSuffix(rawStr, "=") {
