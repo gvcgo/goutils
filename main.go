@@ -1,10 +1,9 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 
-	"github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/moqsien/goutils/pkgs/crypt"
 )
 
 func main() {
@@ -24,8 +23,14 @@ func main() {
 	// f.SetThreadNum(8)
 	// f.GetAndSaveFile(`C:\Users\moqsien\data\projects\go\src\goutils\go1.21.0.linux-amd64.tar.gz`, true)
 	// archiver.ArchiverTest()
-	uuid := gutils.NewUUID()
-	fmt.Println(uuid.String())
-	s, err := base64.RawStdEncoding.DecodeString("Y2RuLmFwcHNmbHllci5jJSXvv71bJe+/vR9JSXvvv70l77+9")
-	fmt.Println(string(s), err)
+	// uuid := gutils.NewUUID()
+	// fmt.Println(uuid.String())
+	// s, err := base64.RawStdEncoding.DecodeString("Y2RuLmFwcHNmbHllci5jJSXvv71bJe+/vR9JSXvvv70l77+9")
+	// fmt.Println(string(s), err)
+
+	str := "abcdfafafjkjalfjkdfnan94385=+!f"
+	r := crypt.EncodeBase64(str)
+	fmt.Println(r)
+	rd := crypt.DecodeBase64(r)
+	fmt.Println(rd)
 }

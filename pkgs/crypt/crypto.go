@@ -73,6 +73,17 @@ func (that *Crypt) AesDecrypt(crypted []byte) ([]byte, error) {
 	return origData, nil
 }
 
+func EncodeBase64(str string) (res string) {
+	if str == "" {
+		return
+	}
+	res = base64.StdEncoding.EncodeToString([]byte(str))
+	res = strings.ReplaceAll(res, "+", "-")
+	res = strings.ReplaceAll(res, "/", "_")
+	res = strings.ReplaceAll(res, "=", "")
+	return
+}
+
 func DecodeBase64(rawStr string) (res string) {
 	rawStr = strings.ReplaceAll(rawStr, "-", "+")
 	rawStr = strings.ReplaceAll(rawStr, "_", "/")
