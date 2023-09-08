@@ -4,7 +4,18 @@ import (
 	"fmt"
 
 	"github.com/moqsien/goutils/pkgs/crypt"
+	"github.com/moqsien/goutils/pkgs/gutils"
 )
+
+type Comparable int
+
+func (that Comparable) Less(other gutils.IComparable) bool {
+	i := other.(Comparable)
+	if that < i {
+		return true
+	}
+	return false
+}
 
 func main() {
 	// if content, err := os.ReadFile("conf.txt"); err != nil {
@@ -33,4 +44,12 @@ func main() {
 	fmt.Println(r)
 	rd := crypt.DecodeBase64(r)
 	fmt.Println(rd)
+
+	iList := []Comparable{6, 8, 2, 4, 1, 5, 7, 3}
+	cList := []gutils.IComparable{}
+	for _, i := range iList {
+		cList = append(cList, i)
+	}
+	gutils.QuickSort(cList, 0, len(iList)-1)
+	fmt.Println(cList)
 }
