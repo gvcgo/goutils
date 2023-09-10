@@ -139,6 +139,17 @@ func (that *Fetcher) Get() (r *resty.Response) {
 	return
 }
 
+func (that *Fetcher) GetString() (result string, statusCode int) {
+	resp := that.Get()
+	if resp == nil {
+		return "", 400
+	}
+	content, _ := io.ReadAll(resp.RawResponse.Body)
+	result = string(content)
+	statusCode = resp.RawResponse.StatusCode
+	return
+}
+
 func (that *Fetcher) parseFilename(fPath string) (fName string) {
 	dirPath := filepath.Dir(fPath)
 	fName = strings.TrimPrefix(strings.ReplaceAll(fPath, dirPath, ""), string(filepath.Separator))
