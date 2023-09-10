@@ -144,6 +144,7 @@ func (that *Fetcher) GetString() (result string, statusCode int) {
 	if resp == nil {
 		return "", 400
 	}
+	defer resp.RawResponse.Body.Close()
 	content, _ := io.ReadAll(resp.RawResponse.Body)
 	result = string(content)
 	statusCode = resp.RawResponse.StatusCode
