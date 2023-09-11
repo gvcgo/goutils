@@ -13,6 +13,7 @@ import (
 type Archiver struct {
 	DstDir      string
 	SrcFilePath string
+	ZipName     string
 }
 
 func NewArchiver(srcFilePath string, dstDir string) (*Archiver, error) {

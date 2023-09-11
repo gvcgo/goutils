@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/crypt"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
@@ -11,10 +12,7 @@ type Comparable int
 
 func (that Comparable) Less(other gutils.IComparable) bool {
 	i := other.(Comparable)
-	if that < i {
-		return true
-	}
-	return false
+	return that < i
 }
 
 func main() {
@@ -52,4 +50,9 @@ func main() {
 	}
 	gutils.QuickSort(cList, 0, len(iList)-1)
 	fmt.Println(cList)
+
+	a, _ := archiver.NewArchiver(`C:\Users\moqsien\data\projects\go\src\goutils\test`, `C:\Users\moqsien\data\projects\go\src\goutils`)
+	a.SetZipName("test.zip")
+	err := a.ZipDir()
+	fmt.Println(err)
 }
