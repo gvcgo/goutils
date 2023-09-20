@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/moqsien/goutils/pkgs/ggit"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
@@ -56,5 +58,7 @@ func main() {
 	g.SetProxyUrl("http://localhost:2023")
 	// g.CloneBySSH("git@github.com:moqsien/goktrl.git")
 	// g.AddTagAndPushToRemote("v1.3.9")
-	g.DeleteTagAndPushToRemote("v1.3.9")
+	// g.DeleteTagAndPushToRemote("v1.3.9")
+	err := g.CommitAndPush("update")
+	fmt.Println(err)
 }

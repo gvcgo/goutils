@@ -2,6 +2,7 @@ package ggit
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,6 +17,7 @@ import (
 	"github.com/moqsien/goutils/pkgs/ggit/ghttp"
 	"github.com/moqsien/goutils/pkgs/ggit/gssh"
 	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
 type Git struct {
@@ -33,6 +35,20 @@ func (that *Git) SetSSHKeyPath(keyPath string) {
 
 func (that *Git) SetProxyUrl(proxyUrl string) {
 	that.ProxyUrl = proxyUrl
+}
+
+func (that *Git) getUsernameAndEmail() (userName string, email string) {
+	buf, err := gutils.ExecuteSysCommand(true, ".", "git", "config", "user.name")
+	if err == nil {
+		content, _ := io.ReadAll(buf)
+		userName = string(content)
+	}
+	buf, err = gutils.ExecuteSysCommand(true, ".", "git", "config", "user.email")
+	if err == nil {
+		content, _ := io.ReadAll(buf)
+		email = string(content)
+	}
+	return strings.TrimSpace(userName), strings.TrimSpace(email)
 }
 
 func (that *Git) parseProjectNameFromUrl(projectUrl string) (name string) {
@@ -190,6 +206,55 @@ func (that *Git) PushBySSH() error {
 	return that.push(r, auth, "")
 }
 
+func (that *Git) CommitAndPush(commitMsg string) error {
+	cwdir, err := os.Getwd()
+	if err != nil {
+		gtui.PrintError(err)
+		return err
+	}
+
+	r, err := git.PlainOpen(cwdir)
+	if err != nil {
+		gtui.PrintError(err)
+		return err
+	}
+
+	auth, err := that.getSSHKey()
+	if err != nil {
+		return err
+	}
+
+	w, err := r.Worktree()
+	if err != nil {
+		return err
+	}
+
+	err = w.AddWithOptions(&git.AddOptions{All: true})
+	if err != nil {
+		fmt.Println("++++ ")
+		return err
+	}
+	name, email := that.getUsernameAndEmail()
+	commit, err := w.Commit(commitMsg, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  name,
+			Email: email,
+			When:  time.Now(),
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	obj, err := r.CommitObject(commit)
+	if err != nil {
+		gtui.PrintError(err)
+		return err
+	}
+	gtui.PrintInfo(obj)
+	return that.push(r, auth, "")
+}
+
 func (that *Git) setTag(r *git.Repository, tag string) (bool, error) {
 	gtui.PrintInfof("Set tag %s", tag)
 	h, err := r.Head()
@@ -197,9 +262,14 @@ func (that *Git) setTag(r *git.Repository, tag string) (bool, error) {
 		gtui.PrintErrorf("get HEAD error: %s", err)
 		return false, err
 	}
+	name, email := that.getUsernameAndEmail()
 	_, err = r.CreateTag(tag, h.Hash(), &git.CreateTagOptions{
 		Message: tag,
-		Tagger:  &object.Signature{When: time.Now()},
+		Tagger: &object.Signature{
+			When:  time.Now(),
+			Name:  name,
+			Email: email,
+		},
 	})
 	if err != nil {
 		gtui.PrintErrorf("create tag error: %s", err)
