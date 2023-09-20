@@ -231,7 +231,6 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 
 	err = w.AddWithOptions(&git.AddOptions{All: true})
 	if err != nil {
-		fmt.Println("++++ ")
 		return err
 	}
 	name, email := that.getUsernameAndEmail()
