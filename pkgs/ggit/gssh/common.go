@@ -197,6 +197,7 @@ func dial(network, addr string, proxyOpts transport.ProxyOptions, config *ssh.Cl
 		}
 		conn, err = ctxDialer.DialContext(ctx, "tcp", addr)
 	} else if strings.HasPrefix(proxyOpts.URL, "http") {
+		// use http proxy
 		proxyUrl, err = proxyOpts.FullURL()
 		if err != nil {
 			return nil, err

@@ -20,6 +20,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/utils/ioutil"
 	"github.com/golang/groupcache/lru"
+	"golang.org/x/net/proxy"
 )
 
 // it requires a bytes.Buffer, because we need to know the length
@@ -214,13 +215,23 @@ func configureTransport(transport *http.Transport, ep *transport.Endpoint) error
 		transportWithInsecureTLS(transport)
 	}
 
-	// TODO: set proxy
-	if ep.Proxy.URL != "" {
+	if strings.HasPrefix(ep.Proxy.URL, "http") {
 		proxyURL, err := ep.Proxy.FullURL()
 		if err != nil {
 			return err
 		}
 		transportWithProxy(transport, proxyURL)
+	} else if strings.HasPrefix(ep.Proxy.URL, "socks") {
+		u := strings.TrimPrefix(ep.Proxy.URL, "socks://")
+		u = strings.TrimPrefix(u, "socks5://")
+		dialer, err := proxy.SOCKS5("tcp", u, nil, proxy.Direct)
+		if err != nil {
+			return err
+		}
+		dialContext := func(ctx context.Context, network, address string) (net.Conn, error) {
+			return dialer.Dial(network, address)
+		}
+		transport.DialContext = dialContext
 	}
 	return nil
 }

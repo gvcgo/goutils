@@ -1,15 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-
-	git "github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/transport"
-	"github.com/go-git/go-git/v5/plumbing/transport/client"
-	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
-	"github.com/moqsien/goutils/pkgs/ggit/gssh"
+	"github.com/moqsien/goutils/pkgs/ggit"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -18,40 +10,6 @@ type Comparable int
 func (that Comparable) Less(other gutils.IComparable) bool {
 	i := other.(Comparable)
 	return that < i
-}
-
-func cloneRepo(_url, dir, publicKeyPath string) (*git.Repository, error) {
-	log.Printf("cloning %s into %s", _url, dir)
-	auth, keyErr := publicKey(publicKeyPath)
-	if keyErr != nil {
-		return nil, keyErr
-	}
-
-	client.InstallProtocol("ssh", gssh.DefaultClient)
-	r, err := git.PlainClone(dir, false, &git.CloneOptions{
-		Progress:     os.Stdout,
-		URL:          _url,
-		Auth:         auth,
-		ProxyOptions: transport.ProxyOptions{URL: "http://localhost:2023"},
-	})
-
-	if err != nil {
-		log.Printf("clone git repo error: %s", err)
-		return nil, err
-	}
-
-	return r, nil
-}
-
-func publicKey(filePath string) (*ssh.PublicKeys, error) {
-	var publicKey *ssh.PublicKeys
-	sshKey, _ := os.ReadFile(filePath)
-	publicKey, err := ssh.NewPublicKeys("git", []byte(sshKey), "")
-	// fmt.Println(sshKey)
-	if err != nil {
-		return nil, err
-	}
-	return publicKey, err
 }
 
 func main() {
@@ -94,7 +52,9 @@ func main() {
 	// a.SetZipName("test.zip")
 	// err := a.ZipDir()
 	// fmt.Println(err)
-	keyPath := `C:\Users\moqsien\.ssh\id_rsa`
-	_, err := cloneRepo("git@github.com:moqsien/goktrl.git", `C:\Users\moqsien\data\projects\go\src\play\test`, keyPath)
-	fmt.Println(err)
+	g := ggit.NewGit()
+	g.SetProxyUrl("http://localhost:2023")
+	// g.CloneBySSH("git@github.com:moqsien/goktrl.git")
+	// g.AddTagAndPushToRemote("v1.3.9")
+	g.DeleteTagAndPushToRemote("v1.3.9")
 }
