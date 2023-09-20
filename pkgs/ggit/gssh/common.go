@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/go-git/go-git/v5/plumbing/transport"
+	"github.com/moqsien/goutils/pkgs/ggit/gcommon"
 	"github.com/skeema/knownhosts"
 
 	"github.com/kevinburke/ssh_config"
@@ -32,7 +33,7 @@ type sshConfig interface {
 
 // NewClient creates a new SSH client with an optional *ssh.ClientConfig.
 func NewClient(config *ssh.ClientConfig) transport.Transport {
-	return TNewClient(&runner{config: config})
+	return gcommon.TNewClient(&runner{config: config})
 }
 
 // DefaultAuthBuilder is the function used to create a default AuthMethod, when
@@ -47,7 +48,7 @@ type runner struct {
 	config *ssh.ClientConfig
 }
 
-func (r *runner) Command(cmd string, ep *transport.Endpoint, auth transport.AuthMethod) (Command, error) {
+func (r *runner) Command(cmd string, ep *transport.Endpoint, auth transport.AuthMethod) (gcommon.Command, error) {
 	c := &command{command: cmd, endpoint: ep, config: r.config}
 	if auth != nil {
 		c.setAuth(auth)
