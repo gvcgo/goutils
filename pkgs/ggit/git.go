@@ -206,6 +206,17 @@ func (that *Git) PushBySSH() error {
 	return that.push(r, auth, "")
 }
 
+func (that *Git) handleRenameError(w *git.Worktree, fPath string, err error) {
+	errStr := err.Error()
+	if strings.Contains(errStr, "rename") && strings.HasSuffix(errStr, "Access is denied.") {
+		sList := strings.Split(errStr, " ")
+		if len(sList) > 3 {
+			os.RemoveAll(strings.Trim(sList[2], ":"))
+		}
+		w.Add(fPath)
+	}
+}
+
 func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 	status, err := w.Status()
 	if err != nil {
@@ -217,8 +228,8 @@ func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 		fmt.Println(pStr)
 		if strings.HasPrefix(pStr, "?? ") {
 			p := strings.TrimPrefix(pStr, "?? ")
-			err := w.AddGlob(p)
-			fmt.Println(err)
+			_, err := w.Add(p)
+			that.handleRenameError(w, p, err)
 		}
 	}
 }
@@ -246,7 +257,6 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 		return err
 	}
 
-	// w.AddWithOptions(&git.AddOptions{All: true})
 	that.handleNewFiles(w, cwdir)
 	name, email := that.getUsernameAndEmail()
 
