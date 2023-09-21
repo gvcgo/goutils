@@ -220,7 +220,8 @@ func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 			pList := append([]string{cwdir}, strings.Split(p, "/")...)
 			p = filepath.Join(pList...)
 			fmt.Println("-- ", p)
-			w.Add(p)
+			_, err := w.Add(p)
+			fmt.Println(err)
 		}
 	}
 }
