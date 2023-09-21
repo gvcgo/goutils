@@ -222,7 +222,7 @@ func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 			// fmt.Println("-- ", p)
 			err := w.AddWithOptions(&git.AddOptions{
 				All:  true,
-				Path: p,
+				Glob: p,
 			})
 			fmt.Println(err)
 		}
