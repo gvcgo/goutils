@@ -206,14 +206,20 @@ func (that *Git) PushBySSH() error {
 	return that.push(r, auth, "")
 }
 
-func (that *Git) handleNewFiles(w *git.Worktree) {
+func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 	status, err := w.Status()
 	if err != nil {
 		gtui.PrintError(err)
 		return
 	}
 	sList := strings.Split(status.String(), "\n")
-	fmt.Println(sList)
+	for _, pStr := range sList {
+		if strings.HasPrefix(pStr, "?? ") {
+			p := strings.TrimPrefix(pStr, "?? ")
+			pList := append([]string{cwdir}, strings.Split(p, "/")...)
+			w.Add(filepath.Join(pList...))
+		}
+	}
 }
 
 func (that *Git) CommitAndPush(commitMsg string) error {
@@ -240,7 +246,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 	}
 
 	w.AddWithOptions(&git.AddOptions{All: true})
-	that.handleNewFiles(w)
+	that.handleNewFiles(w, cwdir)
 	name, email := that.getUsernameAndEmail()
 
 	commit, err := w.Commit(commitMsg, &git.CommitOptions{
