@@ -217,7 +217,9 @@ func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 		if strings.HasPrefix(pStr, "?? ") {
 			p := strings.TrimPrefix(pStr, "?? ")
 			pList := append([]string{cwdir}, strings.Split(p, "/")...)
-			w.Add(filepath.Join(pList...))
+			p = filepath.Join(pList...)
+			fmt.Println("-- ", p)
+			w.Add(p)
 		}
 	}
 }
