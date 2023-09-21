@@ -248,7 +248,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 		return err
 	}
 
-	// w.AddWithOptions(&git.AddOptions{All: true})
+	w.AddWithOptions(&git.AddOptions{All: true})
 	that.handleNewFiles(w, cwdir)
 	name, email := that.getUsernameAndEmail()
 
