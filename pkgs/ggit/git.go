@@ -206,6 +206,16 @@ func (that *Git) PushBySSH() error {
 	return that.push(r, auth, "")
 }
 
+func (that *Git) handleNewFiles(w *git.Worktree) {
+	status, err := w.Status()
+	if err != nil {
+		gtui.PrintError(err)
+		return
+	}
+	sList := strings.Split(status.String(), "\n")
+	fmt.Println(sList)
+}
+
 func (that *Git) CommitAndPush(commitMsg string) error {
 	cwdir, err := os.Getwd()
 	if err != nil {
@@ -230,8 +240,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 	}
 
 	w.AddWithOptions(&git.AddOptions{All: true, Path: `C:\Users\moqsien\data\projects\go\src\goutils\pkgs\ggit\gssh`})
-	s, _ := w.Status()
-	fmt.Println(s)
+	that.handleNewFiles(w)
 	name, email := that.getUsernameAndEmail()
 
 	commit, err := w.Commit(commitMsg, &git.CommitOptions{
