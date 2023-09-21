@@ -23,6 +23,7 @@ import (
 type Git struct {
 	ProxyUrl   string
 	SSHKeyPath string
+	dirList    []string
 }
 
 func NewGit() (g *Git) {
@@ -206,6 +207,29 @@ func (that *Git) PushBySSH() error {
 	return that.push(r, auth, "")
 }
 
+func (that *Git) getDirList(parentDirPath string) {
+	if strings.HasSuffix(parentDirPath, ".git") || parentDirPath == "" {
+		return
+	}
+	that.dirList = append(that.dirList, parentDirPath)
+	entries, _ := os.ReadDir(parentDirPath)
+	for _, entry := range entries {
+		if entry.IsDir() {
+			that.getDirList(filepath.Join(parentDirPath, entry.Name()))
+		}
+	}
+}
+
+func (that *Git) addDirs(w *git.Worktree, cwdir string) error {
+	that.getDirList(cwdir)
+	for _, dir := range that.dirList {
+		if err := w.AddWithOptions(&git.AddOptions{All: true, Path: dir}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (that *Git) CommitAndPush(commitMsg string) error {
 	cwdir, err := os.Getwd()
 	if err != nil {
@@ -230,6 +254,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 	}
 
 	err = w.AddWithOptions(&git.AddOptions{All: true})
+	// err = that.addDirs(w, cwdir)
 	if err != nil {
 		return err
 	}
