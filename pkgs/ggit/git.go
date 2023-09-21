@@ -229,7 +229,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 		return err
 	}
 
-	w.AddWithOptions(&git.AddOptions{All: true, Path: `C:\Users\moqsien\data\projects\go\src\goutils\pkgs\ggit`})
+	w.AddWithOptions(&git.AddOptions{All: true, Path: `C:\Users\moqsien\data\projects\go\src\goutils\pkgs\ggit\gssh`})
 	name, email := that.getUsernameAndEmail()
 
 	commit, err := w.Commit(commitMsg, &git.CommitOptions{
