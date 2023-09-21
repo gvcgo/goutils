@@ -207,6 +207,9 @@ func (that *Git) PushBySSH() error {
 }
 
 func (that *Git) handleRenameError(w *git.Worktree, fPath string, err error) {
+	if err == nil {
+		return
+	}
 	errStr := err.Error()
 	if strings.Contains(errStr, "rename") && strings.HasSuffix(errStr, "Access is denied.") {
 		sList := strings.Split(errStr, " ")
