@@ -10,6 +10,7 @@ import (
 
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/client"
@@ -216,7 +217,9 @@ func (that *Git) handleRenameError(w *git.Worktree, fPath string, err error) {
 		if len(sList) > 3 {
 			os.RemoveAll(strings.Trim(sList[2], ":"))
 		}
-		w.Add(fPath)
+		if fPath != "" {
+			w.Add(fPath)
+		}
 	}
 }
 
@@ -235,6 +238,19 @@ func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 			that.handleRenameError(w, p, err)
 		}
 	}
+}
+
+func (that *Git) commit(commitMsg string, w *git.Worktree) (commit plumbing.Hash, err error) {
+	name, email := that.getUsernameAndEmail()
+	commit, err = w.Commit(commitMsg, &git.CommitOptions{
+		All: true,
+		Author: &object.Signature{
+			Name:  name,
+			Email: email,
+			When:  time.Now(),
+		},
+	})
+	return
 }
 
 func (that *Git) CommitAndPush(commitMsg string) error {
@@ -261,19 +277,24 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 	}
 
 	that.handleNewFiles(w, cwdir)
-	name, email := that.getUsernameAndEmail()
+	commit, err := that.commit(commitMsg, w)
 
-	commit, err := w.Commit(commitMsg, &git.CommitOptions{
-		All: true,
-		Author: &object.Signature{
-			Name:  name,
-			Email: email,
-			When:  time.Now(),
-		},
-	})
+	// name, email := that.getUsernameAndEmail()
+	// commit, err := w.Commit(commitMsg, &git.CommitOptions{
+	// 	All: true,
+	// 	Author: &object.Signature{
+	// 		Name:  name,
+	// 		Email: email,
+	// 		When:  time.Now(),
+	// 	},
+	// })
 
 	if err != nil {
-		return err
+		that.handleRenameError(w, "", err)
+		commit, err = that.commit(commitMsg, w)
+		if err != nil {
+			return err
+		}
 	}
 
 	obj, err := r.CommitObject(commit)
