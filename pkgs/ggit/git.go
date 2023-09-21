@@ -217,9 +217,6 @@ func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 		fmt.Println(pStr)
 		if strings.HasPrefix(pStr, "?? ") {
 			p := strings.TrimPrefix(pStr, "?? ")
-			// pList := append([]string{cwdir}, strings.Split(p, "/")...)
-			// p = filepath.Join(pList...)
-			// fmt.Println("-- ", p)
 			err := w.AddGlob(p)
 			fmt.Println(err)
 		}
@@ -249,7 +246,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 		return err
 	}
 
-	w.AddWithOptions(&git.AddOptions{All: true})
+	// w.AddWithOptions(&git.AddOptions{All: true})
 	that.handleNewFiles(w, cwdir)
 	name, email := that.getUsernameAndEmail()
 
