@@ -253,7 +253,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 		return err
 	}
 
-	err = w.AddWithOptions(&git.AddOptions{All: true, Path: cwdir})
+	err = w.AddWithOptions(&git.AddOptions{All: true, Glob: "*"})
 	// err = that.addDirs(w, cwdir)
 	if err != nil {
 		return err
