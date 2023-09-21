@@ -239,7 +239,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 		return err
 	}
 
-	w.AddWithOptions(&git.AddOptions{All: true, Path: `C:\Users\moqsien\data\projects\go\src\goutils\pkgs\ggit\gssh`})
+	w.AddWithOptions(&git.AddOptions{All: true})
 	that.handleNewFiles(w)
 	name, email := that.getUsernameAndEmail()
 
