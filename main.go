@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/moqsien/goutils/pkgs/ggit"
+	"github.com/moqsien/goutils/pkgs/gtea"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -54,11 +52,12 @@ func main() {
 	// a.SetZipName("test.zip")
 	// err := a.ZipDir()
 	// fmt.Println(err)
-	g := ggit.NewGit()
-	g.SetProxyUrl("http://localhost:2023")
+	// g := ggit.NewGit()
+	// g.SetProxyUrl("http://localhost:2023")
 	// g.CloneBySSH("git@github.com:moqsien/goktrl.git")
 	// g.AddTagAndPushToRemote("v1.3.9")
 	// g.DeleteTagAndPushToRemote("v1.3.9")
-	err := g.CommitAndPush("update")
-	fmt.Println(err)
+	// err := g.CommitAndPush("update")
+	// fmt.Println(err)
+	gtea.Run("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 }
