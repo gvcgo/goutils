@@ -37,9 +37,9 @@ func (bar *OrdinaryBar) EnableSucceeded() {
 
 func (bar *OrdinaryBar) prepareExtraInfo() (extra string) {
 	if bar.enableSucceeded {
-		extra = fmt.Sprintf(" [%d/%d|succeeded: %d]", bar.processed, bar.total, bar.succeeded)
+		extra = fmt.Sprintf("%d/%d|succeeded: %d", bar.processed, bar.total, bar.succeeded)
 	} else {
-		extra = fmt.Sprintf(" [%d/%d]", bar.processed, bar.total)
+		extra = fmt.Sprintf("%d/%d", bar.processed, bar.total)
 	}
 	return
 }

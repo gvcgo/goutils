@@ -11,6 +11,7 @@ import (
 
 type DownloadBar struct {
 	Program    *tea.Program
+	model      *DownloadModel
 	total      int64
 	downloaded int64
 	lock       *sync.Mutex
@@ -22,6 +23,7 @@ func NewDownloadBar(opts ...Option) (bar *DownloadBar) {
 	}
 	bar = &DownloadBar{
 		Program: tea.NewProgram(model),
+		model:   model,
 		lock:    &sync.Mutex{},
 	}
 	return
@@ -31,18 +33,26 @@ func (bar *DownloadBar) SetTotal(total int64) {
 	bar.total = total
 }
 
+func (bar *DownloadBar) SetSweep(sweep func()) {
+	bar.model.SetSweep(sweep)
+}
+
+func (bar *DownloadBar) CheckDownloaded() bool {
+	return bar.downloaded == bar.total
+}
+
 func (bar *DownloadBar) prepareExtraInfo() (extra string) {
 	mbSize := 1048576
 	kbSize := 1024
 	if bar.total > int64(mbSize) {
 		extra = fmt.Sprintf(
-			" [%.2f/%.2f MB]",
+			"%.2f/%.2f MB",
 			float64(bar.downloaded)/float64(mbSize),
 			float64(bar.total)/float64(mbSize),
 		)
 	} else {
 		extra = fmt.Sprintf(
-			" [%.2f/%.2f KB]",
+			"%.2f/%.2f KB",
 			float64(bar.downloaded)/float64(kbSize),
 			float64(bar.total)/float64(kbSize),
 		)
@@ -62,17 +72,16 @@ func (bar *DownloadBar) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-func (bar *DownloadBar) Copy(bodyReader io.Reader, storageFile *os.File) {
-	// TeeReader calls bar.Write() each time a new packet is received
-	_, err := io.Copy(storageFile, io.TeeReader(bodyReader, bar))
+func (bar *DownloadBar) Copy(bodyReader io.Reader, storageFile *os.File) (n int64) {
+	size, err := io.Copy(io.MultiWriter(bar, storageFile), bodyReader)
 	if err != nil {
 		bar.Program.Send(ErrorMsg{err})
 	}
+	return size
 }
 
-func (bar *DownloadBar) Run() error {
+func (bar *DownloadBar) Run() {
 	if _, err := bar.Program.Run(); err != nil {
-		return err
+		fmt.Println(err)
 	}
-	return nil
 }

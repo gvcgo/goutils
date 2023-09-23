@@ -1,6 +1,7 @@
 package bar
 
 import (
+	"os"
 	"strings"
 	"time"
 
@@ -28,6 +29,11 @@ func finalPause() tea.Cmd {
 type DownloadModel struct {
 	progress Model
 	err      error
+	sweep    func()
+}
+
+func (dm *DownloadModel) SetSweep(sweep func()) {
+	dm.sweep = sweep
 }
 
 func (dm *DownloadModel) Init() tea.Cmd {
@@ -38,7 +44,10 @@ func (dm *DownloadModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if msg.String() == "q" {
-			return dm, tea.Quit
+			if dm.sweep != nil {
+				dm.sweep()
+			}
+			os.Exit(1)
 		}
 		return dm, nil
 	case tea.WindowSizeMsg:

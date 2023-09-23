@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/moqsien/goutils/pkgs/gtea"
 	"github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/moqsien/goutils/pkgs/request"
 )
 
 type Comparable int
@@ -60,5 +60,10 @@ func main() {
 	// err := g.CommitAndPush("update")
 	// fmt.Println(err)
 	// gtea.Run("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
-	gtea.TestDownload("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+	// gtea.TestDownload("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+
+	f := request.NewFetcher()
+	f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+	f.SetThreadNum(2)
+	f.GetAndSaveFile("gvc_windows-amd64.zip", true)
 }

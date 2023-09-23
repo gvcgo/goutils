@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/moqsien/goutils/pkgs/archiver"
+	"github.com/moqsien/goutils/pkgs/gtea/bar"
 	"github.com/moqsien/goutils/pkgs/gtui"
 	utils "github.com/moqsien/goutils/pkgs/gutils"
 	nproxy "golang.org/x/net/proxy"
@@ -33,8 +34,8 @@ type Fetcher struct {
 	size         int64
 	checkSum     string
 	checkSumType string
-	bar          *gtui.ProgressBar
 	lock         *sync.Mutex
+	dbar         *bar.DownloadBar
 }
 
 func NewFetcher() *Fetcher {
@@ -152,8 +153,8 @@ func (that *Fetcher) GetString() (result string, statusCode int) {
 }
 
 func (that *Fetcher) parseFilename(fPath string) (fName string) {
-	dirPath := filepath.Dir(fPath)
-	fName = strings.TrimPrefix(strings.ReplaceAll(fPath, dirPath, ""), string(filepath.Separator))
+	name := filepath.Base(fPath)
+	fName = strings.TrimLeft(name, string(filepath.Separator))
 	return
 }
 
@@ -203,14 +204,7 @@ func (that *Fetcher) singleDownload(localPath string) (size int64) {
 		}
 		defer utils.Closeq(outFile)
 		defer utils.Closeq(res.RawResponse.Body)
-
-		// io.Copy reads maximum 32kb size, it is perfect for large file download too
-		written, err := io.Copy(io.MultiWriter(outFile, that.bar), res.RawResponse.Body)
-		if err != nil {
-			gtui.PrintError(err)
-			return
-		}
-		size = written
+		size = that.dbar.Copy(res.RawResponse.Body, outFile)
 	} else {
 		fmt.Println(err)
 	}
@@ -265,13 +259,7 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 		}
 		defer utils.Closeq(outFile)
 		defer utils.Closeq(res.RawResponse.Body)
-
-		// io.Copy reads maximum 32kb size, it is perfect for large file download too
-		written, err := io.Copy(io.MultiWriter(outFile, that.bar), res.RawResponse.Body)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		written := that.dbar.Copy(res.RawResponse.Body, outFile)
 		that.lock.Lock()
 		that.size += written
 		that.lock.Unlock()
@@ -296,7 +284,10 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 	waitgroup.Add(that.threadNum)
 
 	range_init := 0
-
+	that.dbar.SetSweep(func() {
+		os.RemoveAll(part_dir)
+		os.RemoveAll(localPath)
+	})
 	for i := 0; i < that.threadNum; i++ {
 		// concurrency request, i for thread id
 		id := i
@@ -342,18 +333,22 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 			gtui.PrintWarning("Content-Length is invalid.")
 			return that.GetFile(localPath, force...)
 		}
-		that.bar = gtui.NewProgressBar(that.parseFilename(localPath), int(content_length))
-		that.bar.Start()
+		that.dbar = bar.NewDownloadBar(bar.WithTitle(that.parseFilename(localPath)), bar.WithDefaultGradient(), bar.WithWidth(30))
+		that.dbar.SetTotal(content_length)
+		that.dbar.SetSweep(func() {
+			os.RemoveAll(localPath)
+		})
 	} else {
 		gtui.PrintError(err)
 		return
 	}
 
+	go that.dbar.Run()
+
 	if that.threadNum <= 1 {
 		size = that.singleDownload(localPath)
 	} else {
 		os.RemoveAll(that.getPartDir(localPath))
-
 		that.multiDownload(localPath, int(content_length))
 		size = that.size
 	}

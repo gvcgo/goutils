@@ -311,14 +311,20 @@ func (m *Model) titleView() string {
 	if m.tileShown == "" {
 		return ""
 	}
-	return termenv.String(m.tileShown + " ").Foreground(termenv.ANSIBrightCyan).String()
+	if !strings.Contains(m.tileShown, "[") {
+		m.tileShown = fmt.Sprintf("[%s] ", m.tileShown)
+	}
+	return termenv.String(m.tileShown).Foreground(termenv.ANSIBrightCyan).String()
 }
 
 func (m *Model) extraView() string {
 	if m.extraShown == "" {
 		return ""
 	}
-	return termenv.String(" " + m.extraShown + " ").Foreground(termenv.ANSIBrightGreen).String()
+	if !strings.Contains(m.extraShown, "[") {
+		m.extraShown = fmt.Sprintf(" [%s] ", m.extraShown)
+	}
+	return termenv.String(m.extraShown).Foreground(termenv.ANSIBrightGreen).String()
 }
 
 func (m Model) barView(b *strings.Builder, percent float64, textWidth int) {
