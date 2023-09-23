@@ -59,5 +59,6 @@ func main() {
 	// g.DeleteTagAndPushToRemote("v1.3.9")
 	// err := g.CommitAndPush("update")
 	// fmt.Println(err)
-	gtea.Run("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+	// gtea.Run("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+	gtea.TestDownload("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 }

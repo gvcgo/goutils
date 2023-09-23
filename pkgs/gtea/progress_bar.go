@@ -2,119 +2,13 @@ package gtea
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
-	"time"
 
-	"github.com/charmbracelet/bubbles/progress"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/moqsien/goutils/pkgs/gtea/bar"
 )
-
-var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
-
-const (
-	padding  = 2
-	maxWidth = 80
-)
-
-type progressMsg float64
-
-type progressErrMsg struct{ err error }
-
-func finalPause() tea.Cmd {
-	return tea.Tick(time.Millisecond*750, func(_ time.Time) tea.Msg {
-		return nil
-	})
-}
-
-type model struct {
-	pw       *progressWriter
-	progress progress.Model
-	err      error
-}
-
-func (m model) Init() tea.Cmd {
-	return nil
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		return m, tea.Quit
-
-	case tea.WindowSizeMsg:
-		m.progress.Width = msg.Width - padding*2 - 4
-		if m.progress.Width > maxWidth {
-			m.progress.Width = maxWidth
-		}
-		return m, nil
-
-	case progressErrMsg:
-		m.err = msg.err
-		return m, tea.Quit
-
-	case progressMsg:
-		var cmds []tea.Cmd
-
-		if msg >= 1.0 {
-			cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
-		}
-
-		cmds = append(cmds, m.progress.SetPercent(float64(msg)))
-		return m, tea.Batch(cmds...)
-
-	// FrameMsg is sent when the progress bar wants to animate itself
-	case progress.FrameMsg:
-		progressModel, cmd := m.progress.Update(msg)
-		m.progress = progressModel.(progress.Model)
-		return m, cmd
-
-	default:
-		return m, nil
-	}
-}
-
-func (m model) View() string {
-	if m.err != nil {
-		return "Error downloading: " + m.err.Error() + "\n"
-	}
-
-	pad := strings.Repeat(" ", padding)
-	return "\n" +
-		pad + m.progress.View() + "\n\n" +
-		pad + helpStyle("Press any key to quit")
-}
-
-var p *tea.Program
-
-type progressWriter struct {
-	total      int
-	downloaded int
-	file       *os.File
-	reader     io.Reader
-	onProgress func(float64)
-}
-
-func (pw *progressWriter) Start() {
-	// TeeReader calls pw.Write() each time a new response is received
-	_, err := io.Copy(pw.file, io.TeeReader(pw.reader, pw))
-	if err != nil {
-		p.Send(progressErrMsg{err})
-	}
-}
-
-func (pw *progressWriter) Write(p []byte) (int, error) {
-	pw.downloaded += len(p)
-	if pw.total > 0 && pw.onProgress != nil {
-		pw.onProgress(float64(pw.downloaded) / float64(pw.total))
-	}
-	return len(p), nil
-}
 
 func getResponse(url string) (*http.Response, error) {
 	resp, err := http.Get(url) // nolint:gosec
@@ -127,7 +21,7 @@ func getResponse(url string) (*http.Response, error) {
 	return resp, nil
 }
 
-func Run(url string) {
+func TestDownload(url string) {
 	resp, err := getResponse(url)
 	if err != nil {
 		fmt.Println("could not get response", err)
@@ -150,27 +44,11 @@ func Run(url string) {
 	}
 	defer file.Close() // nolint:errcheck
 
-	pw := &progressWriter{
-		total:  int(resp.ContentLength),
-		file:   file,
-		reader: resp.Body,
-		onProgress: func(ratio float64) {
-			p.Send(progressMsg(ratio))
-		},
-	}
+	title := fmt.Sprintf("[%s] ", filename)
+	dbar := bar.NewDownloadBar(bar.WithDefaultGradient(), bar.WithTitle(title), bar.WithWidth(20))
+	dbar.SetTotal(resp.ContentLength)
 
-	m := model{
-		pw:       pw,
-		progress: progress.New(progress.WithWidth(15)),
-	}
-	// Start Bubble Tea
-	p = tea.NewProgram(m)
-
-	// Start the download
-	go pw.Start()
-
-	if _, err := p.Run(); err != nil {
-		fmt.Println("error running program:", err)
-		os.Exit(1)
-	}
+	go dbar.Copy(resp.Body, file)
+	dbar.Run()
+	// fmt.Println(err)
 }

@@ -3,8 +3,8 @@ module github.com/moqsien/goutils
 go 1.20
 
 require (
-	github.com/charmbracelet/bubbles v0.16.1
 	github.com/charmbracelet/bubbletea v0.24.2
+	github.com/charmbracelet/harmonica v0.2.0
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-git/go-git/v5 v5.9.0
@@ -14,8 +14,11 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/kevinburke/ssh_config v1.2.0
 	github.com/knadh/koanf v1.5.0
+	github.com/lucasb-eyer/go-colorful v1.2.0
 	github.com/moqsien/goktrl v1.3.7
 	github.com/moqsien/xtractr v0.0.1
+	github.com/muesli/reflow v0.3.0
+	github.com/muesli/termenv v0.15.2
 	github.com/mwitkow/go-http-dialer v0.0.0-20161116154839-378f744fb2b8
 	github.com/pterm/pterm v0.12.62
 	github.com/skeema/knownhosts v1.2.1
@@ -43,7 +46,6 @@ require (
 	github.com/bodgit/sevenzip v1.4.2 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/bytedance/sonic v1.8.8 // indirect
-	github.com/charmbracelet/harmonica v0.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
@@ -77,7 +79,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
-	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
@@ -90,8 +91,6 @@ require (
 	github.com/moqsien/processes v1.0.3 // indirect
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
-	github.com/muesli/reflow v0.3.0 // indirect
-	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
