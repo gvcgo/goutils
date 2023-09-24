@@ -104,6 +104,7 @@ const (
 type SelectorModel struct {
 	list     *list.Model
 	delegate *ItemDelegate
+	items    []Item
 	quitting bool
 }
 
@@ -119,6 +120,7 @@ func NewSelectorModel(items []Item, opts ...SOption) (sm *SelectorModel) {
 	sm = &SelectorModel{
 		list:     &l,
 		delegate: delegate,
+		items:    items,
 	}
 	for _, opt := range opts {
 		opt(sm)
@@ -172,6 +174,10 @@ func (that *SelectorModel) View() string {
 func (that *SelectorModel) ChosenList() (r []string) {
 	for item := range *(that.delegate.chosen) {
 		r = append(r, string(item))
+	}
+	// choose the first item by default if none was chosen.
+	if len(r) == 0 && len(that.items) > 0 {
+		r = append(r, string(that.items[0]))
 	}
 	return
 }
