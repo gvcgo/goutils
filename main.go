@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/moqsien/goutils/pkgs/gtea/selector"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -105,11 +105,19 @@ func main() {
 	// ipt.Run()
 	// fmt.Println(ipt.Value())
 
-	itemList := selector.NewItemList()
-	itemList.Add("win", "windows")
-	itemList.Add("linux", "linux")
-	itemList.Add("mac", "darwin")
-	sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true))
-	sel.Run()
-	fmt.Println(sel.Value())
+	// itemList := selector.NewItemList()
+	// itemList.Add("win", "windows")
+	// itemList.Add("linux", "linux")
+	// itemList.Add("mac", "darwin")
+	// sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true))
+	// sel.Run()
+	// fmt.Println(sel.Value())
+	s := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
+		"Name: gvc",
+		"Version: v1.5.6(4e189a)",
+		"UpdateAt: Thu Sep 21 12:53:09 2023 +0800",
+		"Homepage: https://github.com/moqsien/gvc",
+		"Email: moqsien2022@gmail.com",
+	)
+	gprint.PrintlnByDefault(s)
 }
