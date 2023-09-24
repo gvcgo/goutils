@@ -15,11 +15,13 @@ type Item string
 func (that Item) FilterValue() string { return "" }
 
 var (
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.Color("#808080"))
+	itemStyle         = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.Color("#DCDCDC"))
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#FF00FF"))
 )
 
-type ItemDelegate struct{}
+type ItemDelegate struct {
+	chosen *map[Item]struct{}
+}
 
 func (d ItemDelegate) Height() int {
 	return 1
@@ -41,13 +43,18 @@ func (d ItemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 
 	str := fmt.Sprintf("%d. %s", index+1, i)
 
-	fn := itemStyle.Render
+	hintStr := "✔ "
+	if _, exists := (*d.chosen)[i]; !exists {
+		hintStr = "> "
+	}
+	fn := func(s ...string) string {
+		return itemStyle.Render(hintStr, strings.Join(s, " "))
+	}
 	if index == m.Index() {
 		fn = func(s ...string) string {
-			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+			return selectedItemStyle.Render(hintStr + strings.Join(s, " "))
 		}
 	}
-
 	fmt.Fprint(w, fn(str))
 }
 
@@ -91,13 +98,12 @@ func WithEnbleInfinite(enable bool) SOption {
 
 const (
 	DefaultWidth  = 20
-	DefaultHeight = 14
+	DefaultHeight = 10
 )
 
-// TODO: support multiple selection and goto start
 type SelectorModel struct {
 	list     *list.Model
-	choice   string
+	delegate *ItemDelegate
 	quitting bool
 }
 
@@ -106,9 +112,13 @@ func NewSelectorModel(items []Item, opts ...SOption) (sm *SelectorModel) {
 	for _, item := range items {
 		itemList = append(itemList, item)
 	}
-	l := list.New(itemList, &ItemDelegate{}, DefaultWidth, DefaultHeight)
+	delegate := &ItemDelegate{
+		chosen: &map[Item]struct{}{},
+	}
+	l := list.New(itemList, delegate, DefaultWidth, DefaultHeight)
 	sm = &SelectorModel{
-		list: &l,
+		list:     &l,
+		delegate: delegate,
 	}
 	for _, opt := range opts {
 		opt(sm)
@@ -131,13 +141,18 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			that.quitting = true
 			return that, tea.Quit
-
+		case "esc", "tab", "q":
+			return that, tea.Quit
 		case "enter":
 			i, ok := that.list.SelectedItem().(Item)
 			if ok {
-				that.choice = string(i)
+				if _, exist := (*that.delegate.chosen)[i]; !exist {
+					(*that.delegate.chosen)[i] = struct{}{}
+				} else {
+					delete((*that.delegate.chosen), i)
+				}
 			}
-			return that, tea.Quit
+			return that, nil
 		}
 	}
 
@@ -154,6 +169,9 @@ func (that *SelectorModel) View() string {
 	return "\n" + that.list.View() + "\n"
 }
 
-func (that *SelectorModel) Choice() string {
-	return that.choice
+func (that *SelectorModel) ChosenList() (r []string) {
+	for item := range *(that.delegate.chosen) {
+		r = append(r, string(item))
+	}
+	return
 }

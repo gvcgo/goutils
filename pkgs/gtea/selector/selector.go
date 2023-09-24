@@ -62,10 +62,12 @@ func (that *Selector) Run() {
 	}
 }
 
-func (that *Selector) Value() interface{} {
-	choice := that.model.Choice()
+func (that *Selector) Value() (r []interface{}) {
+	cList := that.model.ChosenList()
 	if that.itemList != nil {
-		return that.itemList.Get(choice)
+		for _, item := range cList {
+			r = append(r, that.itemList.Get(item))
+		}
 	}
-	return nil
+	return
 }
