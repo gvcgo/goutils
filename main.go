@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/charmbracelet/lipgloss"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
@@ -91,4 +94,11 @@ func main() {
 	gprint.Rose("hello")
 	gprint.Red("hello")
 	gprint.Orange("hello")
+
+	content := "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello "
+	s := lipgloss.NewStyle().Foreground(lipgloss.Color("#FF69B4")).Render(content)
+	fmt.Println(s)
+
+	fcolor := gprint.NewFadeColors(content)
+	fcolor.Println()
 }
