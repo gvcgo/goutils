@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 )
 
 type OrdinaryBar struct {
@@ -67,9 +68,8 @@ func (bar *OrdinaryBar) AddOnlyProcessed(processed int) {
 	bar.lock.Unlock()
 }
 
-func (bar *OrdinaryBar) Run() error {
+func (bar *OrdinaryBar) Run() {
 	if _, err := bar.Program.Run(); err != nil {
-		return err
+		gprint.PrintError("%+v", err)
 	}
-	return nil
 }

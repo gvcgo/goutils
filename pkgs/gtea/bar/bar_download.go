@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 )
 
 type DownloadBar struct {
@@ -82,6 +83,6 @@ func (bar *DownloadBar) Copy(bodyReader io.Reader, storageFile *os.File) (n int6
 
 func (bar *DownloadBar) Run() {
 	if _, err := bar.Program.Run(); err != nil {
-		fmt.Println(err)
+		gprint.PrintError("%+v", err)
 	}
 }

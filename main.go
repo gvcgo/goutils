@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
-	"github.com/moqsien/goutils/pkgs/request"
 )
 
 type Comparable int
@@ -62,8 +62,33 @@ func main() {
 	// gtea.Run("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 	// gtea.TestDownload("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 
-	f := request.NewFetcher()
-	f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
-	f.SetThreadNum(2)
-	f.GetAndSaveFile("gvc_windows-amd64.zip", true)
+	// f := request.NewFetcher()
+	// f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+	// f.SetThreadNum(2)
+	// f.GetAndSaveFile("gvc_windows-amd64.zip", true)
+
+	// gtui.PrintWarning("hello")
+	// gtui.PrintInfo("hello")
+	// gtui.PrintError("hello")
+	// gtui.PrintFatal("hello")
+	// gtui.PrintSuccess("hello")
+
+	gprint.PrintWarning("hello")
+	gprint.PrintInfo("hello")
+	gprint.PrintError("hello")
+	gprint.PrintFatal("hello")
+	gprint.PrintSuccess("hello")
+
+	gprint.Green("hello")
+	gprint.Yellow("hello")
+	gprint.Cyan("hello")
+	gprint.Magenta("hello")
+	gprint.White("hello")
+	gprint.Gray("hello")
+	gprint.Blue("hello")
+	gprint.Pink("hello")
+	gprint.Brown("hello")
+	gprint.Rose("hello")
+	gprint.Red("hello")
+	gprint.Orange("hello")
 }
