@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -76,29 +76,33 @@ func main() {
 	// gtui.PrintFatal("hello")
 	// gtui.PrintSuccess("hello")
 
-	gprint.PrintWarning("hello")
-	gprint.PrintInfo("hello")
-	gprint.PrintError("hello")
-	gprint.PrintFatal("hello")
-	gprint.PrintSuccess("hello")
+	// gprint.PrintWarning("hello")
+	// gprint.PrintInfo("hello")
+	// gprint.PrintError("hello")
+	// gprint.PrintFatal("hello")
+	// gprint.PrintSuccess("hello")
 
-	gprint.Green("hello")
-	gprint.Yellow("hello")
-	gprint.Cyan("hello")
-	gprint.Magenta("hello")
-	gprint.White("hello")
-	gprint.Gray("hello")
-	gprint.Blue("hello")
-	gprint.Pink("hello")
-	gprint.Brown("hello")
-	gprint.Rose("hello")
-	gprint.Red("hello")
-	gprint.Orange("hello")
+	// gprint.Green("hello")
+	// gprint.Yellow("hello")
+	// gprint.Cyan("hello")
+	// gprint.Magenta("hello")
+	// gprint.White("hello")
+	// gprint.Gray("hello")
+	// gprint.Blue("hello")
+	// gprint.Pink("hello")
+	// gprint.Brown("hello")
+	// gprint.Rose("hello")
+	// gprint.Red("hello")
+	// gprint.Orange("hello")
 
-	content := "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello "
-	s := lipgloss.NewStyle().Foreground(lipgloss.Color("#FF69B4")).Render(content)
-	fmt.Println(s)
+	// content := "hello hello hello hello hello hello hello hello hello hello hello hello hello hello hello "
+	// s := lipgloss.NewStyle().Foreground(lipgloss.Color("#FF69B4")).Render(content)
+	// fmt.Println(s)
 
-	fcolor := gprint.NewFadeColors(content)
-	fcolor.Println()
+	// fcolor := gprint.NewFadeColors(content)
+	// fcolor.Println()
+
+	ipt := input.NewInput(input.WithEchoMode(textinput.EchoPassword), input.WithEchoChar("*"), input.WithPlaceholder("password"))
+	ipt.Run()
+	fmt.Println(ipt.Value())
 }
