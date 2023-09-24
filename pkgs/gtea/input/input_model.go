@@ -99,7 +99,7 @@ func (that *InputModel) View() string {
 	return fmt.Sprintf(
 		"%s\n%s\n",
 		that.textInput.View(),
-		helpStyle(`press "esc" to quit`),
+		helpStyle(`Press "Enter" to end input, "Esc" to quit.`),
 	) + "\n"
 }
 
