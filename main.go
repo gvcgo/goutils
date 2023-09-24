@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/moqsien/goutils/pkgs/request"
 )
 
 type Comparable int
@@ -64,10 +62,10 @@ func main() {
 	// gtea.Run("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 	// gtea.TestDownload("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 
-	// f := request.NewFetcher()
-	// f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
-	// f.SetThreadNum(2)
-	// f.GetAndSaveFile("gvc_windows-amd64.zip", true)
+	f := request.NewFetcher()
+	f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+	f.SetThreadNum(2)
+	f.GetAndSaveFile("gvc_windows-amd64.zip", true)
 
 	// gtui.PrintWarning("hello")
 	// gtui.PrintInfo("hello")
@@ -112,12 +110,12 @@ func main() {
 	// sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true))
 	// sel.Run()
 	// fmt.Println(sel.Value())
-	s := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
-		"Name: gvc",
-		"Version: v1.5.6(4e189a)",
-		"UpdateAt: Thu Sep 21 12:53:09 2023 +0800",
-		"Homepage: https://github.com/moqsien/gvc",
-		"Email: moqsien2022@gmail.com",
-	)
-	gprint.PrintlnByDefault(s)
+	// s := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
+	// 	"Name: gvc",
+	// 	"Version: v1.5.6(4e189a)",
+	// 	"UpdateAt: Thu Sep 21 12:53:09 2023 +0800",
+	// 	"Homepage: https://github.com/moqsien/gvc",
+	// 	"Email: moqsien2022@gmail.com",
+	// )
+	// gprint.PrintlnByDefault(s)
 }

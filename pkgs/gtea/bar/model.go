@@ -173,6 +173,7 @@ type Model struct {
 
 	tileShown  string
 	extraShown string
+	startTime  time.Time
 }
 
 // New returns a model with default values.
@@ -187,6 +188,7 @@ func New(opts ...Option) Model {
 		ShowPercentage: true,
 		PercentFormat:  " %3.0f%%",
 		colorProfile:   termenv.ColorProfile(),
+		startTime:      time.Now(),
 	}
 	if !m.springCustomized {
 		m.SetSpringOptions(defaultFrequency, defaultDamping)
@@ -294,10 +296,12 @@ func (m Model) ViewAs(percent float64) string {
 	b.WriteString(titleView)
 	extraView := m.extraView()
 	percentView := m.percentageView(percent)
-	textWidth := ansi.PrintableRuneWidth(titleView) + ansi.PrintableRuneWidth(extraView) + ansi.PrintableRuneWidth(percentView)
+	timeView := m.timeElapsedView()
+	textWidth := ansi.PrintableRuneWidth(titleView) + ansi.PrintableRuneWidth(extraView) + ansi.PrintableRuneWidth(percentView) + ansi.PrintableRuneWidth(timeView)
 	m.barView(&b, percent, textWidth)
 	b.WriteString(extraView)
 	b.WriteString(percentView)
+	b.WriteString(timeView)
 	return b.String()
 }
 
@@ -305,6 +309,11 @@ func (m *Model) nextFrame() tea.Cmd {
 	return tea.Tick(time.Second/time.Duration(fps), func(time.Time) tea.Msg {
 		return FrameMsg{id: m.id, tag: m.tag}
 	})
+}
+
+func (m *Model) timeElapsedView() string {
+	timeDuration := time.Since(m.startTime).Seconds()
+	return lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFFF")).Render(fmt.Sprintf(" %.1fs", timeDuration))
 }
 
 func (m *Model) titleView() string {
