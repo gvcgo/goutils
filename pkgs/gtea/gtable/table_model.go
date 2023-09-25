@@ -27,12 +27,12 @@ func (that *TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				that.table.Focus()
 			}
-		case "q", "ctrl+c":
+		case "q", "enter", "ctrl+c":
 			return that, tea.Quit
-		case "enter":
-			return that, tea.Batch(
-				tea.Printf("Let's go to %s!", that.table.SelectedRow()[1]),
-			)
+			// case "enter":
+			// 	return that, tea.Batch(
+			// 		tea.Printf("Let's go to %s!", that.table.SelectedRow()[1]),
+			// 	)
 		}
 	}
 	var tModel table.Model
