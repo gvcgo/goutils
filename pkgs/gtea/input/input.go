@@ -13,6 +13,9 @@ type Input struct {
 func NewInput(opts ...TOption) (ipt *Input) {
 	model := NewInputModel(opts...)
 	model.Focus()
+	for _, opt := range opts {
+		opt(model)
+	}
 	ipt = &Input{
 		model:   model,
 		Program: tea.NewProgram(model),

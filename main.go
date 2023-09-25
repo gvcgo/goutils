@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/moqsien/goutils/pkgs/gtea/confirm"
+	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -167,7 +168,14 @@ func main() {
 	// t := gtable.NewTable(table.WithColumns(columns), table.WithRows(rows), table.WithHeight(7), table.WithFocused(true))
 	// t.Run()
 
-	cfm := confirm.NewConfirm(confirm.WithTitle("Do you want to have something?"))
-	cfm.Run()
-	fmt.Println(cfm.Result())
+	// cfm := confirm.NewConfirm(confirm.WithTitle("Do you want to have something?"))
+	// cfm.Run()
+	// fmt.Println(cfm.Result())
+
+	mInput := input.NewMultiInput()
+	mInput.AddOneItem("url", input.MWithWidth(60))
+	mInput.AddOneItem("username", input.MWithWidth(60))
+	mInput.AddOneItem("password", input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
+	mInput.Run()
+	fmt.Printf("%+v\n", mInput.Values())
 }
