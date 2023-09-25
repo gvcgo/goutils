@@ -17,7 +17,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/moqsien/goutils/pkgs/ggit/ghttp"
 	"github.com/moqsien/goutils/pkgs/ggit/gssh"
-	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -82,17 +82,17 @@ func (that *Git) getSSHKey() (*ssh.PublicKeys, error) {
 
 func (that *Git) CloneBySSH(projectUrl string) (*git.Repository, error) {
 	if !strings.HasPrefix(projectUrl, "git@") {
-		gtui.PrintErrorf("unsupported scheme: %s", projectUrl)
+		gprint.PrintError("unsupported scheme: %s", projectUrl)
 		return nil, fmt.Errorf("unsupported scheme: %s", projectUrl)
 	}
 	projectName := that.parseProjectNameFromUrl(projectUrl)
 	if projectName == "" {
-		gtui.PrintError("can not fine project name!")
+		gprint.PrintError("can not fine project name!")
 		return nil, fmt.Errorf("can not fine project name: %s", projectUrl)
 	}
 	cwdir, err := os.Getwd()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return nil, err
 	}
 	auth, err := that.getSSHKey()
@@ -109,7 +109,7 @@ func (that *Git) CloneBySSH(projectUrl string) (*git.Repository, error) {
 		ProxyOptions: transport.ProxyOptions{URL: that.ProxyUrl},
 	})
 	if err != nil {
-		gtui.PrintErrorf("clone git repo error: %s", err)
+		gprint.PrintError("clone git repo error: %s", err)
 		return nil, err
 	}
 	return r, nil
@@ -118,19 +118,19 @@ func (that *Git) CloneBySSH(projectUrl string) (*git.Repository, error) {
 func (that *Git) PullBySSH() error {
 	cwdir, err := os.Getwd()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
 	r, err := git.PlainOpen(cwdir)
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
 	w, err := r.Worktree()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
@@ -148,7 +148,7 @@ func (that *Git) PullBySSH() error {
 		ProxyOptions: transport.ProxyOptions{URL: that.ProxyUrl},
 	})
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 	return err
 }
@@ -178,10 +178,10 @@ func (that *Git) push(r *git.Repository, auth transport.AuthMethod, tag string) 
 	err := r.Push(po)
 	if err != nil {
 		if err == git.NoErrAlreadyUpToDate {
-			gtui.PrintWarning("origin remote was up to date, no push done")
+			gprint.PrintWarning("origin remote was up to date, no push done")
 			return nil
 		}
-		gtui.PrintErrorf("push to remote origin error: %s", err)
+		gprint.PrintError("push to remote origin error: %s", err)
 		return err
 	}
 	return nil
@@ -190,13 +190,13 @@ func (that *Git) push(r *git.Repository, auth transport.AuthMethod, tag string) 
 func (that *Git) PushBySSH() error {
 	cwdir, err := os.Getwd()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
 	r, err := git.PlainOpen(cwdir)
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
@@ -226,7 +226,7 @@ func (that *Git) handleRenameError(w *git.Worktree, fPath string, err error) {
 func (that *Git) handleNewFiles(w *git.Worktree, cwdir string) {
 	status, err := w.Status()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return
 	}
 	sList := strings.Split(status.String(), "\n")
@@ -256,13 +256,13 @@ func (that *Git) commit(commitMsg string, w *git.Worktree) (commit plumbing.Hash
 func (that *Git) CommitAndPush(commitMsg string) error {
 	cwdir, err := os.Getwd()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
 	r, err := git.PlainOpen(cwdir)
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
@@ -299,7 +299,7 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 
 	obj, err := r.CommitObject(commit)
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 	fmt.Println(obj)
@@ -307,10 +307,10 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 }
 
 func (that *Git) setTag(r *git.Repository, tag string) (bool, error) {
-	gtui.PrintInfof("Set tag %s", tag)
+	gprint.PrintInfo("Set tag %s", tag)
 	h, err := r.Head()
 	if err != nil {
-		gtui.PrintErrorf("get HEAD error: %s", err)
+		gprint.PrintError("get HEAD error: %s", err)
 		return false, err
 	}
 	name, email := that.getUsernameAndEmail()
@@ -323,7 +323,7 @@ func (that *Git) setTag(r *git.Repository, tag string) (bool, error) {
 		},
 	})
 	if err != nil {
-		gtui.PrintErrorf("create tag error: %s", err)
+		gprint.PrintError("create tag error: %s", err)
 		return false, err
 	}
 	return true, nil
@@ -332,13 +332,13 @@ func (that *Git) setTag(r *git.Repository, tag string) (bool, error) {
 func (that *Git) AddTagAndPushToRemote(tag string) error {
 	cwdir, err := os.Getwd()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
 	r, err := git.PlainOpen(cwdir)
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
@@ -348,23 +348,23 @@ func (that *Git) AddTagAndPushToRemote(tag string) error {
 	}
 	_, err = that.setTag(r, tag)
 	if err != nil {
-		gtui.PrintErrorf("create tag error: %s", err)
+		gprint.PrintError("create tag error: %s", err)
 		return err
 	}
 	return that.push(r, auth, "*")
 }
 
 func (that *Git) DeleteTagAndPushToRemote(tag string) error {
-	gtui.PrintInfof("Delete tag %s", tag)
+	gprint.PrintInfo("Delete tag %s", tag)
 	cwdir, err := os.Getwd()
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
 	r, err := git.PlainOpen(cwdir)
 	if err != nil {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return err
 	}
 
@@ -375,7 +375,7 @@ func (that *Git) DeleteTagAndPushToRemote(tag string) error {
 
 	err = r.DeleteTag(tag)
 	if err != nil {
-		gtui.PrintErrorf("delete local tag failed: %+v", err)
+		gprint.PrintError("delete local tag failed: %+v", err)
 	}
 	return that.push(r, auth, tag)
 }

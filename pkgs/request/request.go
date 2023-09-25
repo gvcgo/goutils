@@ -15,7 +15,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/gtea/bar"
-	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	utils "github.com/moqsien/goutils/pkgs/gutils"
 	nproxy "golang.org/x/net/proxy"
 )
@@ -98,10 +98,10 @@ func (that *Fetcher) setProxy() {
 			if dialer, err := nproxy.SOCKS5("tcp", fmt.Sprintf("%s:%d", host, port), nil, nproxy.Direct); err == nil {
 				httpClient.Transport = &http.Transport{Dial: dialer.Dial}
 			} else {
-				gtui.PrintError(err)
+				gprint.PrintError("%+v", err)
 			}
 		default:
-			gtui.PrintError(fmt.Sprintf("Unsupported proxy: %s", that.Proxy))
+			gprint.PrintError(fmt.Sprintf("Unsupported proxy: %s", that.Proxy))
 		}
 	}
 }
@@ -169,7 +169,7 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 		forceToDownload = true
 	}
 	if ok, _ := utils.PathIsExist(localPath); ok && !forceToDownload {
-		gtui.PrintInfo("File already exists.")
+		gprint.PrintInfo("File already exists.")
 		return 100
 	}
 	if forceToDownload {
@@ -178,7 +178,7 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(localPath)
 		if err != nil {
-			gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 			return
 		}
 		defer utils.Closeq(outFile)
@@ -199,7 +199,7 @@ func (that *Fetcher) singleDownload(localPath string) (size int64) {
 	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(localPath)
 		if err != nil {
-			gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 			return
 		}
 		defer utils.Closeq(outFile)
@@ -254,7 +254,7 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 	if res, err := client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(that.getPartFileName(localPath, id))
 		if err != nil {
-			gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 			return
 		}
 		defer utils.Closeq(outFile)
@@ -264,12 +264,12 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 		that.size += written
 		that.lock.Unlock()
 		if res.RawResponse.StatusCode != 200 && written < int64(range_end-range_begin) {
-			gtui.PrintFatal(fmt.Sprintf("Download failed, status code: %d", res.RawResponse.StatusCode))
-			gtui.PrintWarning(fmt.Sprintf("Please remove temp files manually: %s.", that.getPartDir(localPath)))
+			gprint.PrintFatal(fmt.Sprintf("Download failed, status code: %d", res.RawResponse.StatusCode))
+			gprint.PrintWarning(fmt.Sprintf("Please remove temp files manually: %s.", that.getPartDir(localPath)))
 			os.Exit(1)
 		}
 	} else {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 
@@ -320,7 +320,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 		forceToDownload = true
 	}
 	if ok, _ := utils.PathIsExist(localPath); ok && !forceToDownload {
-		gtui.PrintInfo("File already exists.")
+		gprint.PrintInfo("File already exists.")
 		return 100
 	}
 	if forceToDownload {
@@ -330,7 +330,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
 		content_length = res.RawResponse.ContentLength
 		if content_length <= 0 {
-			gtui.PrintWarning("Content-Length is invalid.")
+			gprint.PrintWarning("Content-Length is invalid.")
 			return that.GetFile(localPath, force...)
 		}
 		that.dbar = bar.NewDownloadBar(bar.WithTitle(that.parseFilename(localPath)), bar.WithDefaultGradient(), bar.WithWidth(30))
@@ -339,7 +339,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 			os.RemoveAll(localPath)
 		})
 	} else {
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return
 	}
 
@@ -365,14 +365,14 @@ func (that *Fetcher) checkFileSum(fPath string) bool {
 func (that *Fetcher) DownloadAndDecompress(localPath, dstDir string, force ...bool) error {
 	if size := that.GetAndSaveFile(localPath, force...); size > 0 {
 		if !that.checkFileSum(localPath) {
-			gtui.PrintError("CheckSum failed.")
+			gprint.PrintError("CheckSum failed.")
 			os.RemoveAll(localPath)
 			return fmt.Errorf("checksum failed")
 		}
 		if a, err := archiver.NewArchiver(localPath, dstDir); err == nil {
 			_, err = a.UnArchive()
 			if err != nil {
-				gtui.PrintError("Unarchive file failed.")
+				gprint.PrintError("Unarchive file failed.")
 				os.RemoveAll(localPath)
 			}
 			return err

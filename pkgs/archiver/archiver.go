@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
 	"github.com/moqsien/xtractr"
 )
@@ -40,7 +40,7 @@ func (that *Archiver) UnArchive() (string, error) {
 	// files may be nil, but will contain any files written (even with an error).
 	size, files, _, err := xtractr.ExtractFile(x)
 	if files == nil || err != nil {
-		gtui.PrintError(size, err)
+		gprint.PrintError("%v, %+v", size, err)
 	}
 	return that.DstDir, err
 }

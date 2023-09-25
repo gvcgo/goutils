@@ -2,10 +2,11 @@ package logs
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/v2/os/glog"
-	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	utils "github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -38,7 +39,7 @@ func Error(v ...interface{}) {
 	if Logger != nil {
 		Logger.Error(ctx, v...)
 	} else {
-		gtui.PrintError(v...)
+		gprint.PrintError(fmt.Sprint(v...))
 	}
 }
 
@@ -46,7 +47,7 @@ func Warning(v ...interface{}) {
 	if Logger != nil {
 		Logger.Warning(ctx, v...)
 	} else {
-		gtui.PrintWarning(v...)
+		gprint.PrintWarning(fmt.Sprint(v...))
 	}
 }
 
@@ -54,6 +55,6 @@ func Info(v ...interface{}) {
 	if Logger != nil {
 		Logger.Info(ctx, v...)
 	} else {
-		gtui.PrintInfo(v...)
+		gprint.PrintInfo(fmt.Sprint(v...))
 	}
 }

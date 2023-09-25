@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 )
 
 type Crypt struct {
@@ -107,7 +107,7 @@ func DecodeBase64(rawStr string) (res string) {
 		if err == nil {
 			return
 		}
-		gtui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		if len(rawStr) > 5 {
 			fmt.Println(rawStr[len(rawStr)-5:])
 		} else {

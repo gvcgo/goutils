@@ -18,7 +18,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 )
 
 func PathIsExist(path string) (bool, error) {
@@ -36,7 +36,7 @@ func MakeDirs(dirs ...string) {
 	for _, d := range dirs {
 		if ok, _ := PathIsExist(d); !ok {
 			if err := os.MkdirAll(d, os.ModePerm); err != nil {
-				fmt.Println("mkdir failed: ", err)
+				gprint.PrintError("mkdir failed: %+v", err)
 			}
 		}
 	}
@@ -54,14 +54,14 @@ func CopyFile(src, dst string) (written int64, err error) {
 	srcFile, err := os.Open(src)
 
 	if err != nil {
-		gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 		return
 	}
 	defer srcFile.Close()
 
 	dstFile, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		gtui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 		return
 	}
 	defer dstFile.Close()
@@ -71,17 +71,17 @@ func CopyFile(src, dst string) (written int64, err error) {
 
 func CheckSum(fpath, cType, cSum string) (r bool) {
 	if cSum != ComputeSum(fpath, cType) {
-		gtui.PrintError("Checksum failed.")
+		gprint.PrintError("Checksum failed.")
 		return
 	}
-	gtui.PrintSuccess("Checksum succeeded.")
+	gprint.PrintSuccess("Checksum succeeded.")
 	return true
 }
 
 func ComputeSum(fpath, sumType string) (sumStr string) {
 	f, err := os.Open(fpath)
 	if err != nil {
-		gtui.PrintError(fmt.Sprintf("Open file failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Open file failed: %+v", err))
 		return
 	}
 	defer f.Close()
@@ -95,12 +95,12 @@ func ComputeSum(fpath, sumType string) (sumStr string) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		gtui.PrintError(fmt.Sprintf("[Crypto] %s is not supported.", sumType))
+		gprint.PrintError(fmt.Sprintf("[Crypto] %s is not supported.", sumType))
 		return
 	}
 
 	if _, err = io.Copy(h, f); err != nil {
-		gtui.PrintError(fmt.Sprintf("Copy file failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Copy file failed: %+v", err))
 		return
 	}
 

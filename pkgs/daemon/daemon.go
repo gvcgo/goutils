@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	utils "github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -79,9 +79,9 @@ func (that *Daemon) Run(osArgs ...string) {
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	if err := cmd.Start(); err != nil {
-		gtui.PrintErrorf("start %s failed, error: %v\n", osArgs[0], err)
+		gprint.PrintError("start %s failed, error: %v\n", osArgs[0], err)
 		os.Exit(1)
 	}
-	gtui.PrintSuccessf("%s [PID] %d running...\n", osArgs[0], cmd.Process.Pid)
+	gprint.PrintSuccess("%s [PID] %d running...\n", osArgs[0], cmd.Process.Pid)
 	os.Exit(0)
 }
