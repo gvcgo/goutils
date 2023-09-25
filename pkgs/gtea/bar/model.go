@@ -312,8 +312,17 @@ func (m *Model) nextFrame() tea.Cmd {
 }
 
 func (m *Model) timeElapsedView() string {
-	timeDuration := time.Since(m.startTime).Seconds()
-	return lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFFF")).Render(fmt.Sprintf(" %.1fs", timeDuration))
+	tlag := time.Since(m.startTime)
+	pattern := "|%.1fs"
+	t := tlag.Seconds()
+	if tlag >= time.Minute {
+		pattern = "|%.1fm"
+		t = tlag.Minutes()
+	} else if tlag >= time.Hour {
+		pattern = "|%.1fh"
+		t = tlag.Hours()
+	}
+	return lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFFF")).Render(fmt.Sprintf(pattern, t))
 }
 
 func (m *Model) titleView() string {
