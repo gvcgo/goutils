@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/moqsien/goutils/pkgs/gtea/selector"
+	"github.com/charmbracelet/bubbles/table"
+	"github.com/moqsien/goutils/pkgs/gtea/gtable"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -105,14 +104,15 @@ func main() {
 	// ipt.Run()
 	// fmt.Println(ipt.Value())
 
-	itemList := selector.NewItemList()
-	itemList.Add("win", "windows")
-	itemList.Add("linux", "linux")
-	itemList.Add("mac", "darwin")
-	// sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(true))
-	sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true))
-	sel.Run()
-	fmt.Println(sel.Value())
+	// itemList := selector.NewItemList()
+	// itemList.Add("win", "windows")
+	// itemList.Add("linux", "linux")
+	// itemList.Add("mac", "darwin")
+	// // sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(true))
+	// sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true))
+	// sel.Run()
+	// fmt.Println(sel.Value())
+
 	// s := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
 	// 	"Name: gvc",
 	// 	"Version: v1.5.6(4e189a)",
@@ -121,4 +121,48 @@ func main() {
 	// 	"Email: moqsien2022@gmail.com",
 	// )
 	// gprint.PrintlnByDefault(s)
+
+	columns := []table.Column{
+		{Title: "Rank", Width: 4},
+		{Title: "City", Width: 10},
+		{Title: "Country", Width: 10},
+		{Title: "Population", Width: 10},
+	}
+
+	rows := []table.Row{
+		{"1", "Tokyo", "Japan", "37,274,000"},
+		{"2", "Delhi", "India", "32,065,760"},
+		{"3", "Shanghai", "China", "28,516,904"},
+		{"4", "Dhaka", "Bangladesh", "22,478,116"},
+		{"5", "São Paulo", "Brazil", "22,429,800"},
+		{"6", "Mexico City", "Mexico", "22,085,140"},
+		{"7", "Cairo", "Egypt", "21,750,020"},
+		{"8", "Beijing", "China", "21,333,332"},
+		{"9", "Mumbai", "India", "20,961,472"},
+		{"10", "Osaka", "Japan", "19,059,856"},
+		{"11", "Chongqing", "China", "16,874,740"},
+		{"12", "Karachi", "Pakistan", "16,839,950"},
+		{"13", "Istanbul", "Turkey", "15,636,243"},
+		{"14", "Kinshasa", "DR Congo", "15,628,085"},
+		{"15", "Lagos", "Nigeria", "15,387,639"},
+		{"16", "Buenos Aires", "Argentina", "15,369,919"},
+		{"17", "Kolkata", "India", "15,133,888"},
+		{"18", "Manila", "Philippines", "14,406,059"},
+		{"19", "Tianjin", "China", "14,011,828"},
+		{"20", "Guangzhou", "China", "13,964,637"},
+		{"21", "Rio De Janeiro", "Brazil", "13,634,274"},
+		{"22", "Lahore", "Pakistan", "13,541,764"},
+		{"23", "Bangalore", "India", "13,193,035"},
+		{"24", "Shenzhen", "China", "12,831,330"},
+		{"25", "Moscow", "Russia", "12,640,818"},
+		{"26", "Chennai", "India", "11,503,293"},
+		{"27", "Bogota", "Colombia", "11,344,312"},
+		{"28", "Paris", "France", "11,142,303"},
+		{"29", "Jakarta", "Indonesia", "11,074,811"},
+		{"30", "Lima", "Peru", "11,044,607"},
+		{"31", "Bangkok", "Thailand", "10,899,698"},
+	}
+
+	t := gtable.NewTable(table.WithColumns(columns), table.WithRows(rows), table.WithHeight(7), table.WithFocused(true))
+	t.Run()
 }
