@@ -3,6 +3,7 @@ package selector
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -58,6 +59,24 @@ func (d ItemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fmt.Fprint(w, fn(str))
 }
 
+func (d ItemDelegate) Clear() {
+	for key := range *d.chosen {
+		delete(*d.chosen, key)
+	}
+}
+
+func (d ItemDelegate) Delete(key Item) {
+	delete(*d.chosen, key)
+}
+
+func (d ItemDelegate) Add(key Item) {
+	(*d.chosen)[key] = struct{}{}
+}
+
+func (d ItemDelegate) GetAll() map[Item]struct{} {
+	return *d.chosen
+}
+
 type SOption func(sm *SelectorModel)
 
 func WithTitle(title string) SOption {
@@ -96,6 +115,12 @@ func WithEnbleInfinite(enable bool) SOption {
 	}
 }
 
+func WidthEnableMulti(enable bool) SOption {
+	return func(sm *SelectorModel) {
+		sm.multi = enable
+	}
+}
+
 const (
 	DefaultWidth  = 20
 	DefaultHeight = 10
@@ -106,6 +131,7 @@ type SelectorModel struct {
 	delegate *ItemDelegate
 	items    []Item
 	quitting bool
+	multi    bool
 }
 
 func NewSelectorModel(items []Item, opts ...SOption) (sm *SelectorModel) {
@@ -140,19 +166,26 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch keypress := msg.String(); keypress {
-		case "ctrl+c":
+		case "ctrl+c", "q":
 			that.quitting = true
-			return that, tea.Quit
-		case "esc", "tab", "q":
-			return that, tea.Quit
+			os.Exit(1)
+		case "esc", "tab":
+			cmd := tea.Quit
+			if len(*that.delegate.chosen) == 0 {
+				cmd = nil
+			}
+			return that, cmd
 		case "enter":
 			i, ok := that.list.SelectedItem().(Item)
-			if ok {
+			if ok && that.multi {
 				if _, exist := (*that.delegate.chosen)[i]; !exist {
-					(*that.delegate.chosen)[i] = struct{}{}
+					that.delegate.Add(i)
 				} else {
-					delete((*that.delegate.chosen), i)
+					that.delegate.Delete(i)
 				}
+			} else if ok && !that.multi {
+				that.delegate.Clear()
+				that.delegate.Add(i)
 			}
 			return that, nil
 		}
@@ -167,12 +200,14 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return that, cmd
 }
 
+var helpStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#626262")).Render
+
 func (that *SelectorModel) View() string {
-	return "\n" + that.list.View() + "\n"
+	return "\n" + that.list.View() + "\n" + helpStyle(`Press Tab/Esc to confirm selections.`)
 }
 
 func (that *SelectorModel) ChosenList() (r []string) {
-	for item := range *(that.delegate.chosen) {
+	for item := range that.delegate.GetAll() {
 		r = append(r, string(item))
 	}
 	// choose the first item by default if none was chosen.
