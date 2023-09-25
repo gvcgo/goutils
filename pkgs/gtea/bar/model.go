@@ -101,6 +101,30 @@ func WithWidth(w int) Option {
 	}
 }
 
+func WithPercentageFormat(format string) Option {
+	return func(m *Model) {
+		m.PercentFormat = format
+	}
+}
+
+func WithEmptyChar(emptyChar string) Option {
+	return func(m *Model) {
+		m.Empty = emptyChar
+	}
+}
+
+func WithFullChar(fullChar string) Option {
+	return func(m *Model) {
+		m.Full = fullChar
+	}
+}
+
+func WithDisableTime() Option {
+	return func(m *Model) {
+		m.enableTime = false
+	}
+}
+
 // WithSpringOptions sets the initial frequency and damping options for the
 // progress bar's built-in spring-based animation. Frequency corresponds to
 // speed, and damping to bounciness. For details see:
@@ -174,6 +198,7 @@ type Model struct {
 	tileShown  string
 	extraShown string
 	startTime  time.Time
+	enableTime bool
 }
 
 // New returns a model with default values.
@@ -189,6 +214,7 @@ func New(opts ...Option) Model {
 		PercentFormat:  " %3.0f%%",
 		colorProfile:   termenv.ColorProfile(),
 		startTime:      time.Now(),
+		enableTime:     true,
 	}
 	if !m.springCustomized {
 		m.SetSpringOptions(defaultFrequency, defaultDamping)
@@ -296,12 +322,17 @@ func (m Model) ViewAs(percent float64) string {
 	b.WriteString(titleView)
 	extraView := m.extraView()
 	percentView := m.percentageView(percent)
+	textWidth := ansi.PrintableRuneWidth(titleView) + ansi.PrintableRuneWidth(extraView) + ansi.PrintableRuneWidth(percentView)
 	timeView := m.timeElapsedView()
-	textWidth := ansi.PrintableRuneWidth(titleView) + ansi.PrintableRuneWidth(extraView) + ansi.PrintableRuneWidth(percentView) + ansi.PrintableRuneWidth(timeView)
+	if m.enableTime {
+		textWidth += ansi.PrintableRuneWidth(timeView)
+	}
 	m.barView(&b, percent, textWidth)
 	b.WriteString(extraView)
 	b.WriteString(percentView)
-	b.WriteString(timeView)
+	if m.enableTime {
+		b.WriteString(timeView)
+	}
 	return b.String()
 }
 
@@ -313,13 +344,13 @@ func (m *Model) nextFrame() tea.Cmd {
 
 func (m *Model) timeElapsedView() string {
 	tlag := time.Since(m.startTime)
-	pattern := "|%.1fs"
+	pattern := " %.1fs"
 	t := tlag.Seconds()
 	if tlag >= time.Minute {
-		pattern = "|%.1fm"
+		pattern = " %.1fm"
 		t = tlag.Minutes()
 	} else if tlag >= time.Hour {
-		pattern = "|%.1fh"
+		pattern = " %.1fh"
 		t = tlag.Hours()
 	}
 	return lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFFF")).Render(fmt.Sprintf(pattern, t))
