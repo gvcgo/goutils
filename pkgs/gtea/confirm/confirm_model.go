@@ -33,7 +33,7 @@ func (that *ConfirmModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (that *ConfirmModel) View() string {
-	title := gprint.GreenStr("%s [Y/N].", that.Title)
+	title := gprint.CyanStr("%s [Y/N].", that.Title)
 	if that.key != "" {
 		title += fmt.Sprintf(" %s", gprint.YellowStr(that.key))
 	}

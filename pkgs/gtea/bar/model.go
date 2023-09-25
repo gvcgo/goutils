@@ -361,6 +361,15 @@ func (m *Model) titleView() string {
 		return ""
 	}
 	if !strings.Contains(m.tileShown, "[") {
+		if len(m.tileShown) < 16 {
+			count := (16 - len(m.tileShown)) / 2
+			if count == 0 {
+				count = 1
+			}
+			for i := 0; i < count; i++ {
+				m.tileShown = " " + m.tileShown + " "
+			}
+		}
 		m.tileShown = fmt.Sprintf("[%s] ", m.tileShown)
 	}
 	return termenv.String(m.tileShown).Foreground(termenv.ANSIBrightCyan).String()
