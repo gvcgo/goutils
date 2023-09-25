@@ -322,7 +322,7 @@ func (m Model) ViewAs(percent float64) string {
 	b.WriteString(titleView)
 	extraView := m.extraView()
 	percentView := m.percentageView(percent)
-	textWidth := ansi.PrintableRuneWidth(titleView) + ansi.PrintableRuneWidth(extraView) + ansi.PrintableRuneWidth(percentView)
+	textWidth := ansi.PrintableRuneWidth("\n") + ansi.PrintableRuneWidth(titleView) + ansi.PrintableRuneWidth(extraView) + ansi.PrintableRuneWidth(percentView)
 	timeView := m.timeElapsedView()
 	if m.enableTime {
 		textWidth += ansi.PrintableRuneWidth(timeView)
@@ -333,7 +333,7 @@ func (m Model) ViewAs(percent float64) string {
 	if m.enableTime {
 		b.WriteString(timeView)
 	}
-	return b.String()
+	return b.String() + "\n"
 }
 
 func (m *Model) nextFrame() tea.Cmd {
