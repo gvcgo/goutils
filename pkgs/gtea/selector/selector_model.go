@@ -187,7 +187,11 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				that.delegate.Clear()
 				that.delegate.Add(i)
 			}
-			return that, nil
+			cmd := tea.Quit
+			if that.multi {
+				cmd = nil
+			}
+			return that, cmd
 		}
 	}
 
@@ -203,7 +207,7 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 var helpStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#626262")).Render
 
 func (that *SelectorModel) View() string {
-	return "\n" + that.list.View() + "\n" + helpStyle(`Press Tab/Esc to confirm selections.`)
+	return "\n" + that.list.View() + "\n" + helpStyle(`Press Tab/Esc to confirm selections.`) + "\n"
 }
 
 func (that *SelectorModel) ChosenList() (r []string) {
