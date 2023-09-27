@@ -20,7 +20,7 @@ func NewTable(opts ...table.Option) (t *Table) {
 		BorderForeground(lipgloss.Color("240")).
 		BorderBottom(true).
 		Bold(false)
-	// s.Cell = s.Cell.Foreground(lipgloss.Color("#808080"))
+	s.Cell = s.Cell.Align(lipgloss.Left)
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("229")).
 		Background(lipgloss.Color("57")).
