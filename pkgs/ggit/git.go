@@ -24,6 +24,7 @@ import (
 type Git struct {
 	ProxyUrl   string
 	SSHKeyPath string
+	WorkDir    string
 }
 
 func NewGit() (g *Git) {
@@ -36,6 +37,10 @@ func (that *Git) SetSSHKeyPath(keyPath string) {
 
 func (that *Git) SetProxyUrl(proxyUrl string) {
 	that.ProxyUrl = proxyUrl
+}
+
+func (that *Git) SetWorkDir(workdir string) {
+	that.WorkDir = workdir
 }
 
 func (that *Git) getUsernameAndEmail() (userName string, email string) {
@@ -90,11 +95,19 @@ func (that *Git) CloneBySSH(projectUrl string) (*git.Repository, error) {
 		gprint.PrintError("can not fine project name!")
 		return nil, fmt.Errorf("can not fine project name: %s", projectUrl)
 	}
-	cwdir, err := os.Getwd()
-	if err != nil {
-		gprint.PrintError("%+v", err)
-		return nil, err
+	var (
+		err   error
+		cwdir string
+	)
+	cwdir = that.WorkDir
+	if cwdir == "" {
+		cwdir, err = os.Getwd()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return nil, err
+		}
 	}
+
 	auth, err := that.getSSHKey()
 	if err != nil {
 		return nil, err
@@ -116,10 +129,17 @@ func (that *Git) CloneBySSH(projectUrl string) (*git.Repository, error) {
 }
 
 func (that *Git) PullBySSH() error {
-	cwdir, err := os.Getwd()
-	if err != nil {
-		gprint.PrintError("%+v", err)
-		return err
+	var (
+		err   error
+		cwdir string
+	)
+	cwdir = that.WorkDir
+	if cwdir == "" {
+		cwdir, err = os.Getwd()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return err
+		}
 	}
 
 	r, err := git.PlainOpen(cwdir)
@@ -188,10 +208,17 @@ func (that *Git) push(r *git.Repository, auth transport.AuthMethod, tag string) 
 }
 
 func (that *Git) PushBySSH() error {
-	cwdir, err := os.Getwd()
-	if err != nil {
-		gprint.PrintError("%+v", err)
-		return err
+	var (
+		err   error
+		cwdir string
+	)
+	cwdir = that.WorkDir
+	if cwdir == "" {
+		cwdir, err = os.Getwd()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return err
+		}
 	}
 
 	r, err := git.PlainOpen(cwdir)
@@ -254,10 +281,17 @@ func (that *Git) commit(commitMsg string, w *git.Worktree) (commit plumbing.Hash
 }
 
 func (that *Git) CommitAndPush(commitMsg string) error {
-	cwdir, err := os.Getwd()
-	if err != nil {
-		gprint.PrintError("%+v", err)
-		return err
+	var (
+		err   error
+		cwdir string
+	)
+	cwdir = that.WorkDir
+	if cwdir == "" {
+		cwdir, err = os.Getwd()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return err
+		}
 	}
 
 	r, err := git.PlainOpen(cwdir)
@@ -278,16 +312,6 @@ func (that *Git) CommitAndPush(commitMsg string) error {
 
 	that.handleNewFiles(w, cwdir)
 	commit, err := that.commit(commitMsg, w)
-
-	// name, email := that.getUsernameAndEmail()
-	// commit, err := w.Commit(commitMsg, &git.CommitOptions{
-	// 	All: true,
-	// 	Author: &object.Signature{
-	// 		Name:  name,
-	// 		Email: email,
-	// 		When:  time.Now(),
-	// 	},
-	// })
 
 	if err != nil {
 		that.handleRenameError(w, "", err)
@@ -330,10 +354,17 @@ func (that *Git) setTag(r *git.Repository, tag string) (bool, error) {
 }
 
 func (that *Git) AddTagAndPushToRemote(tag string) error {
-	cwdir, err := os.Getwd()
-	if err != nil {
-		gprint.PrintError("%+v", err)
-		return err
+	var (
+		err   error
+		cwdir string
+	)
+	cwdir = that.WorkDir
+	if cwdir == "" {
+		cwdir, err = os.Getwd()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return err
+		}
 	}
 
 	r, err := git.PlainOpen(cwdir)
@@ -356,10 +387,17 @@ func (that *Git) AddTagAndPushToRemote(tag string) error {
 
 func (that *Git) DeleteTagAndPushToRemote(tag string) error {
 	gprint.PrintInfo("Delete tag %s", tag)
-	cwdir, err := os.Getwd()
-	if err != nil {
-		gprint.PrintError("%+v", err)
-		return err
+	var (
+		err   error
+		cwdir string
+	)
+	cwdir = that.WorkDir
+	if cwdir == "" {
+		cwdir, err = os.Getwd()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return err
+		}
 	}
 
 	r, err := git.PlainOpen(cwdir)
