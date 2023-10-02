@@ -445,14 +445,20 @@ func (that *Git) ShowLatestTag() error {
 		return err
 	}
 
-	tagList := []string{}
+	var (
+		latestTag  string
+		latestTime time.Time
+	)
 	tags.ForEach(func(t *object.Tag) error {
-		tagList = append(tagList, t.Name)
+		if t.Tagger.When.After(latestTime) {
+			latestTag = t.Name
+			latestTime = t.Tagger.When
+		}
 		return nil
 	})
 
-	if len(tagList) > 0 {
-		gprint.PrintInfo("Latest tag: %s", tagList[len(tagList)-1])
+	if latestTag != "" {
+		gprint.PrintInfo("Latest tag: %s", latestTag)
 	}
 	return nil
 }
