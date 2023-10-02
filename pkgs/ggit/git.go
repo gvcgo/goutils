@@ -44,6 +44,8 @@ func (that *Git) SetWorkDir(workdir string) {
 }
 
 func (that *Git) getUsernameAndEmail() (userName string, email string) {
+	userName = "moqsien"
+	email = "moqsien@foxmail.com"
 	buf, err := gutils.ExecuteSysCommand(true, ".", "git", "config", "user.name")
 	if err == nil {
 		content, _ := io.ReadAll(buf)
@@ -416,4 +418,41 @@ func (that *Git) DeleteTagAndPushToRemote(tag string) error {
 		gprint.PrintError("delete local tag failed: %+v", err)
 	}
 	return that.push(r, auth, tag)
+}
+
+func (that *Git) ShowLatestTag() error {
+	var (
+		err   error
+		cwdir string
+	)
+	cwdir = that.WorkDir
+	if cwdir == "" {
+		cwdir, err = os.Getwd()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return err
+		}
+	}
+	r, err := git.PlainOpen(cwdir)
+	if err != nil {
+		gprint.PrintError("%+v", err)
+		return err
+	}
+
+	tags, err := r.TagObjects()
+	if err != nil {
+		gprint.PrintError("%+v", err)
+		return err
+	}
+
+	tagList := []string{}
+	tags.ForEach(func(t *object.Tag) error {
+		tagList = append(tagList, t.Name)
+		return nil
+	})
+
+	if len(tagList) > 0 {
+		gprint.PrintInfo("Latest tag: %s", tagList[len(tagList)-1])
+	}
+	return nil
 }

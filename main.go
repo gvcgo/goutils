@@ -1,9 +1,7 @@
 package main
 
 import (
-	"sync"
-
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/ggit"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -177,14 +175,18 @@ func main() {
 	// mInput.AddOneItem("password", input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
 	// mInput.Run()
 	// fmt.Printf("%+v\n", mInput.Values())
-	w := &sync.WaitGroup{}
-	for i := 0; i < 1000; i++ {
-		w.Add(1)
-		var v int = i
-		go func() {
-			gprint.PrintError("test: %d", v)
-			w.Done()
-		}()
-	}
-	w.Wait()
+	// w := &sync.WaitGroup{}
+	// for i := 0; i < 1000; i++ {
+	// 	w.Add(1)
+	// 	var v int = i
+	// 	go func() {
+	// 		gprint.PrintError("test: %d", v)
+	// 		w.Done()
+	// 	}()
+	// }
+	// w.Wait()
+
+	git := ggit.NewGit()
+	git.SetWorkDir(`C:\Users\moqsien\data\projects\go\src\goutils`)
+	git.ShowLatestTag()
 }
