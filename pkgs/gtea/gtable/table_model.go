@@ -1,17 +1,16 @@
 package gtable
 
 import (
-	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 var baseStyle = lipgloss.NewStyle().
-	BorderStyle(lipgloss.NormalBorder()).
+	BorderStyle(lipgloss.HiddenBorder()).
 	BorderForeground(lipgloss.Color("240"))
 
 type TableModel struct {
-	table *table.Model
+	table *Model
 }
 
 func (that *TableModel) Init() tea.Cmd { return nil }
@@ -35,7 +34,7 @@ func (that *TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// 	)
 		}
 	}
-	var tModel table.Model
+	var tModel Model
 	tModel, cmd = that.table.Update(msg)
 	that.table = &tModel
 	return that, cmd

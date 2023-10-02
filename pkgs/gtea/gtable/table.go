@@ -1,7 +1,6 @@
 package gtable
 
 import (
-	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
@@ -12,9 +11,9 @@ type Table struct {
 	model   *TableModel
 }
 
-func NewTable(opts ...table.Option) (t *Table) {
-	tt := table.New(opts...)
-	s := table.DefaultStyles()
+func NewTable(opts ...Option) (t *Table) {
+	tt := New(opts...)
+	s := DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
 		BorderForeground(lipgloss.Color("240")).

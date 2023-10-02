@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/moqsien/goutils/pkgs/ggit"
+	"github.com/moqsien/goutils/pkgs/gtea/gtable"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -121,50 +121,40 @@ func main() {
 	// )
 	// gprint.PrintlnByDefault(s)
 
-	// columns := []table.Column{
-	// 	{Title: "Rank", Width: 10},
-	// 	{Title: "City", Width: 20},
-	// 	{Title: "Country", Width: 20},
-	// 	{Title: "Population", Width: 50},
+	columns := []gtable.Column{
+		{Title: "Rank", Width: 10},
+		{Title: "City", Width: 20},
+		{Title: "Country", Width: 20},
+		{Title: "Population", Width: 50},
+	}
+
+	rows := []gtable.Row{
+		{"1", "Tokyo", "Japan", "37,274,000"},
+		{"2", "Delhi", "India", "32,065,760"},
+		{"3", "Shanghai", "China", "28,516,904"},
+		{"4", "Dhaka", "Bangladesh", "22,478,116"},
+		{"5", "São Paulo", "Brazil", "22,429,800"},
+		{"6", "Mexico City", "Mexico", "22,085,140"},
+	}
+
+	t := gtable.NewTable(gtable.WithColumns(columns), gtable.WithRows(rows), gtable.WithHeight(7), gtable.WithFocused(true))
+	t.Run()
+
+	// style := lipgloss.NewStyle().Width(20).MaxWidth(20).Inline(true)
+	// renderedCell := style.Render(runewidth.Truncate("hello test", 20, "*"))
+	// hStyle := lipgloss.NewStyle().Bold(true).Padding(0, 1).BorderStyle(lipgloss.NormalBorder()).
+	// 	BorderForeground(lipgloss.Color("240")).
+	// 	BorderBottom(true).
+	// 	Bold(false)
+	// // fmt.Println(hStyle.Render(renderedCell))
+	// var s = make([]string, 0, len(columns))
+	// for _, col := range columns {
+	// 	style := lipgloss.NewStyle().Width(col.Width).MaxWidth(col.Width).Inline(true)
+	// 	renderedCell := style.Render(runewidth.Truncate(col.Title, col.Width, "…"))
+	// 	s = append(s, hStyle.Render(renderedCell))
+	// 	// fmt.Println(hStyle.Render(renderedCell))
 	// }
-
-	// rows := []table.Row{
-	// 	{"1", "Tokyo", "Japan", "37,274,000"},
-	// 	{"2", "Delhi", "India", "32,065,760"},
-	// 	{"3", "Shanghai", "China", "28,516,904"},
-	// 	{"4", "Dhaka", "Bangladesh", "22,478,116"},
-	// 	{"5", "São Paulo", "Brazil", "22,429,800"},
-	// 	{"6", "Mexico City", "Mexico", "22,085,140"},
-	// 	{"7", "Cairo", "Egypt", "21,750,020"},
-	// 	{"8", "Beijing", "China", "21,333,332"},
-	// 	{"9", "Mumbai", "India", "20,961,472"},
-	// 	{"10", "Osaka", "Japan", "19,059,856"},
-	// 	{"11", "Chongqing", "China", "16,874,740"},
-	// 	{"12", "Karachi", "Pakistan", "16,839,950"},
-	// 	{"13", "Istanbul", "Turkey", "15,636,243"},
-	// 	{"14", "Kinshasa", "DR Congo", "15,628,085"},
-	// 	{"15", "Lagos", "Nigeria", "15,387,639"},
-	// 	{"16", "Buenos Aires", "Argentina", "15,369,919"},
-	// 	{"17", "Kolkata", "India", "15,133,888"},
-	// 	{"18", "Manila", "Philippines", "14,406,059"},
-	// 	{"19", "Tianjin", "China", "14,011,828"},
-	// 	{"20", "Guangzhou", "China", "13,964,637"},
-	// 	{"21", "Rio De Janeiro", "Brazil", "13,634,274"},
-	// 	{"22", "Lahore", "Pakistan", "13,541,764"},
-	// 	{"23", "Bangalore", "India", "13,193,035"},
-	// 	{"24", "Shenzhen", "China", "12,831,330"},
-	// 	{"25", "Moscow", "Russia", "12,640,818"},
-	// 	{"26", "Chennai", "India", "11,503,293"},
-	// 	{"27", "Bogota", "Colombia", "11,344,312"},
-	// 	{"28", "Paris", "France", "11,142,303"},
-	// 	{"29", "Jakarta", "Indonesia", "11,074,811"},
-	// 	{"30", "Lima", "Peru", "11,044,607"},
-	// 	{"31", "Bangkok", "Thailand", "10,899,698"},
-	// }
-
-	// t := gtable.NewTable(table.WithColumns(columns), table.WithRows(rows), table.WithHeight(7), table.WithFocused(true))
-	// t.Run()
-
+	// fmt.Println(gtable.JoinHorizontal(lipgloss.Left, s...))
 	// cfm := confirm.NewConfirm(confirm.WithTitle("Do you want to have something?"))
 	// cfm.Run()
 	// fmt.Println(cfm.Result())
@@ -186,7 +176,7 @@ func main() {
 	// }
 	// w.Wait()
 
-	git := ggit.NewGit()
-	git.SetWorkDir(`C:\Users\moqsien\data\projects\go\src\goutils`)
-	git.ShowLatestTag()
+	// 	git := ggit.NewGit()
+	// 	git.SetWorkDir(`C:\Users\moqsien\data\projects\go\src\goutils`)
+	// 	git.ShowLatestTag()
 }

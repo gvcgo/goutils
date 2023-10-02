@@ -92,6 +92,6 @@ func (dm *DownloadModel) View() string {
 
 	pad := strings.Repeat(" ", padding)
 	return "\n" +
-		pad + dm.progress.View() + "\n\n" +
-		pad + helpStyle(`Press "q" to quit`)
+		pad + dm.progress.View() + "\n" +
+		pad + helpStyle(`Press "q" to quit`) + "\n"
 }
