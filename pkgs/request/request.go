@@ -369,7 +369,7 @@ func (that *Fetcher) DownloadAndDecompress(localPath, dstDir string, force ...bo
 			os.RemoveAll(localPath)
 			return fmt.Errorf("checksum failed")
 		}
-		if a, err := archiver.NewArchiver(localPath, dstDir); err == nil {
+		if a, err := archiver.NewArchiver(localPath, dstDir, true); err == nil {
 			_, err = a.UnArchive()
 			if err != nil {
 				gprint.PrintError("Unarchive file failed.")
