@@ -65,7 +65,7 @@ func (that *Archiver) SetPassword(p string) {
 }
 
 func ArchiverTest() {
-	a, _ := NewArchiver(`C:\Users\moqsien\.gvc\typst_files\typst_x64_linux.tar.xz`, `C:\Users\moqsien\.gvc\typst_files\test`)
+	a, _ := NewArchiver(`/Volumes/Data/projects/go/src/goutils/protoc_osx_universal_binary.zip`, `/Volumes/Data/projects/go/src/goutils`)
 	_, err := a.UnArchive()
 	fmt.Println(err)
 }
