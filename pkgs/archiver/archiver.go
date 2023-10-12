@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	archive "github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
 	"github.com/moqsien/xtractr"
@@ -14,21 +15,30 @@ type Archiver struct {
 	DstDir      string
 	SrcFilePath string
 	ZipName     string
+	UseAchiver  bool
 }
 
-func NewArchiver(srcFilePath string, dstDir string) (*Archiver, error) {
+func NewArchiver(srcFilePath string, dstDir string, useArchiver ...bool) (*Archiver, error) {
 	if ok, _ := gutils.PathIsExist(srcFilePath); !ok {
 		return nil, fmt.Errorf("srcfile path does not exists")
 	}
 	if ok, _ := gutils.PathIsExist(dstDir); !ok {
-		os.MkdirAll(dstDir, 0777)
+		os.MkdirAll(dstDir, os.ModePerm)
 	}
-	return &Archiver{DstDir: dstDir, SrcFilePath: srcFilePath}, nil
+	a := &Archiver{DstDir: dstDir, SrcFilePath: srcFilePath}
+	if len(useArchiver) > 0 {
+		a.UseAchiver = useArchiver[0]
+	}
+	return a, nil
 }
 
 func (that *Archiver) UnArchive() (string, error) {
 	if strings.HasSuffix(that.SrcFilePath, ".tar.xz") {
 		err := XZDecompress(that.SrcFilePath, that.DstDir)
+		return that.DstDir, err
+	}
+	if that.UseAchiver {
+		err := archive.Unarchive(that.SrcFilePath, that.DstDir)
 		return that.DstDir, err
 	}
 	x := &xtractr.XFile{

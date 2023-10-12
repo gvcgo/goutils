@@ -38,7 +38,7 @@ func XZDecompress(filePath string, destDir string) error {
 		destFileParentDir := filepath.Dir(destFilePath)
 
 		// Create the parent directory path if it does not exist
-		err = os.MkdirAll(destFileParentDir, 0755)
+		err = os.MkdirAll(destFileParentDir, os.ModePerm)
 		if err != nil {
 			return err
 		}

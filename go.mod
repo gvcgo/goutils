@@ -17,6 +17,7 @@ require (
 	github.com/knadh/koanf v1.5.0
 	github.com/lucasb-eyer/go-colorful v1.2.0
 	github.com/mattn/go-runewidth v0.0.14
+	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/goktrl v1.3.7
 	github.com/moqsien/xtractr v0.0.1
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b
@@ -55,6 +56,7 @@ require (
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
+	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
@@ -70,6 +72,7 @@ require (
 	github.com/go-playground/validator/v10 v10.13.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golang/snappy v0.0.2 // indirect
 	github.com/gomodule/redigo v1.8.9 // indirect
 	github.com/gookit/color v1.5.3 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
@@ -81,6 +84,7 @@ require (
 	github.com/kdomanski/iso9660 v0.3.5 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
+	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
