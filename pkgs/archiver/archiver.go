@@ -16,6 +16,7 @@ type Archiver struct {
 	SrcFilePath string
 	ZipName     string
 	UseAchiver  bool
+	Password    string
 }
 
 func NewArchiver(srcFilePath string, dstDir string, useArchiver ...bool) (*Archiver, error) {
@@ -44,8 +45,12 @@ func (that *Archiver) UnArchive() (string, error) {
 	x := &xtractr.XFile{
 		FilePath:  that.SrcFilePath,
 		OutputDir: that.DstDir,
+		FileMode:  os.ModePerm,
+		DirMode:   os.ModePerm,
 	}
-
+	if that.Password != "" {
+		x.Password = that.Password
+	}
 	// size is how many bytes were written.
 	// files may be nil, but will contain any files written (even with an error).
 	size, files, _, err := xtractr.ExtractFile(x)
@@ -53,6 +58,10 @@ func (that *Archiver) UnArchive() (string, error) {
 		gprint.PrintError("%v, %+v", size, err)
 	}
 	return that.DstDir, err
+}
+
+func (that *Archiver) SetPassword(p string) {
+	that.Password = p
 }
 
 func ArchiverTest() {
