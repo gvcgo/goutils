@@ -179,5 +179,6 @@ func main() {
 	// 	git := ggit.NewGit()
 	// 	git.SetWorkDir(`C:\Users\moqsien\data\projects\go\src\goutils`)
 	// 	git.ShowLatestTag()
-	archiver.ArchiverTest()
+	// archiver.ArchiverTest()
+	archiver.ZipTest()
 }

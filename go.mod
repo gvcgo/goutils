@@ -3,6 +3,7 @@ module github.com/moqsien/goutils
 go 1.20
 
 require (
+	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/charmbracelet/bubbles v0.16.1
 	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/harmonica v0.2.0
