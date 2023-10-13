@@ -112,9 +112,14 @@ func (that *Archiver) zipWithPassword() (err error) {
 }
 
 func ZipTest() {
-	a, _ := NewArchiver(`/Users/moqsien/.ssh`, `/Volumes/Data/projects/go/src/goutils`)
-	a.SetZipName("dotSSH.zip")
+	// a, _ := NewArchiver(`/Users/moqsien/.ssh`, `/Volumes/Data/projects/go/src/goutils`)
+	// a.SetZipName("dotSSH.zip")
+	// a.SetPassword("123456")
+	// err := a.zipWithPassword()
+	// fmt.Println(err)
+
+	a, _ := NewArchiver(`/Volumes/Data/projects/go/src/goutils/dotSSH.zip`, `/Volumes/Data/projects/go/src/goutils`)
 	a.SetPassword("123456")
-	err := a.zipWithPassword()
+	_, err := a.UnArchive()
 	fmt.Println(err)
 }
