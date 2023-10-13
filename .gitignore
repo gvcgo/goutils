@@ -2,3 +2,4 @@
 *.exe
 *.zip
 temp_*
+.DS_Store
