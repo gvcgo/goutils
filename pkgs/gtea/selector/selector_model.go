@@ -226,3 +226,11 @@ func (that *SelectorModel) ChosenList() (r []string) {
 	}
 	return
 }
+
+func (that *SelectorModel) Values() (r map[string]string) {
+	r = map[string]string{}
+	for _, item := range that.ChosenList() {
+		r[item] = item
+	}
+	return
+}

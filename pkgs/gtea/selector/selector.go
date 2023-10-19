@@ -71,3 +71,7 @@ func (that *Selector) Value() (r []interface{}) {
 	}
 	return
 }
+
+func (that *Selector) Values() (r []interface{}) {
+	return that.Value()
+}
