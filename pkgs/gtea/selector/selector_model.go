@@ -127,11 +127,12 @@ const (
 )
 
 type SelectorModel struct {
-	list     *list.Model
-	delegate *ItemDelegate
-	items    []Item
-	quitting bool
-	multi    bool
+	list      *list.Model
+	delegate  *ItemDelegate
+	items     []Item
+	quitting  bool
+	multi     bool
+	submitCmd tea.Cmd
 }
 
 func NewSelectorModel(items []Item, opts ...SOption) (sm *SelectorModel) {
@@ -144,14 +145,19 @@ func NewSelectorModel(items []Item, opts ...SOption) (sm *SelectorModel) {
 	}
 	l := list.New(itemList, delegate, DefaultWidth, DefaultHeight)
 	sm = &SelectorModel{
-		list:     &l,
-		delegate: delegate,
-		items:    items,
+		list:      &l,
+		delegate:  delegate,
+		items:     items,
+		submitCmd: tea.Quit,
 	}
 	for _, opt := range opts {
 		opt(sm)
 	}
 	return
+}
+
+func (that *SelectorModel) SetSubmitCmd(scmd tea.Cmd) {
+	that.submitCmd = scmd
 }
 
 func (that *SelectorModel) Init() tea.Cmd {
@@ -170,7 +176,7 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			that.quitting = true
 			os.Exit(1)
 		case "esc", "tab":
-			cmd := tea.Quit
+			cmd := that.submitCmd
 			if len(*that.delegate.chosen) == 0 {
 				cmd = nil
 			}
@@ -187,7 +193,7 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				that.delegate.Clear()
 				that.delegate.Add(i)
 			}
-			cmd := tea.Quit
+			cmd := that.submitCmd
 			if that.multi {
 				cmd = nil
 			}
