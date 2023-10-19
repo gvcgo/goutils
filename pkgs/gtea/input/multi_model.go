@@ -89,13 +89,19 @@ type InputMultiModel struct {
 	focusIndex int
 	inputs     *InputList
 	cursorMode cursor.Mode
+	submitCmd  tea.Cmd
 }
 
 func NewInputMultiModel() (imm *InputMultiModel) {
 	imm = &InputMultiModel{
-		inputs: NewInputList(),
+		inputs:    NewInputList(),
+		submitCmd: tea.Quit,
 	}
 	return
+}
+
+func (that *InputMultiModel) SetSubmitCmd(scmd tea.Cmd) {
+	that.submitCmd = scmd
 }
 
 func (that *InputMultiModel) AddOneInput(key string, opts ...MOption) {
@@ -137,7 +143,7 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Did the user press enter while the submit button was focused?
 			// If so, exit.
 			if s == "enter" && that.focusIndex == that.inputs.Len() {
-				return that, tea.Quit
+				return that, that.submitCmd
 			}
 
 			// Cycle indexes
