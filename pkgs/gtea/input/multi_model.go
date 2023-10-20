@@ -190,7 +190,7 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return that, that.submitCmd
 			}
 
-			if that.inputs.GetByIndex(that.focusIndex).IsOption() && (s == "down" || s == "up") {
+			if that.focusIndex >= 0 && that.focusIndex < that.inputs.Len() && that.inputs.GetByIndex(that.focusIndex).IsOption() && (s == "down" || s == "up") {
 				_, cmd := that.inputs.GetByIndex(that.focusIndex).Update(msg)
 				return that, cmd
 			}
