@@ -35,14 +35,14 @@ func (that *OptionModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "esc", "enter":
 			return that, tea.Quit
-		case "up", "k":
+		case "up":
 			if that.Idx < len(that.ValueList)-1 {
 				that.Idx++
 			} else {
 				that.Idx = 0
 			}
 			that.InputModel.textInput.SetValue(that.ValueList[that.Idx])
-		case "down", "j":
+		case "down":
 			if that.Idx > 0 {
 				that.Idx--
 			} else {
