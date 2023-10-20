@@ -22,6 +22,10 @@ func (that *MultiInput) AddOneItem(key string, opts ...MOption) {
 	that.model.AddOneInput(key, opts...)
 }
 
+func (that *MultiInput) AddOneOption(values []string, opts ...MOption) {
+	that.model.AddOneOption(values, opts...)
+}
+
 func (that *MultiInput) Run() {
 	if that.model.inputs.Len() == 0 {
 		gprint.PrintError("No item is added!")

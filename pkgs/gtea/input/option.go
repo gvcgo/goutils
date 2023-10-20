@@ -12,7 +12,7 @@ type Option struct {
 
 func NewOption(values []string, opts ...TOption) (option *Option) {
 	model := NewOptionModel(values, opts...)
-	model.InputModel.Focus()
+	// model.InputModel.Focus()
 	option = &Option{
 		model:   model,
 		Program: tea.NewProgram(model),

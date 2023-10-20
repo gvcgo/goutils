@@ -51,6 +51,7 @@ type ErrMsg error
 type InputModel struct {
 	textInput *textinput.Model
 	err       error
+	helpStr   string
 }
 
 func NewInputModel(opts ...TOption) (im *InputModel) {
@@ -60,12 +61,20 @@ func NewInputModel(opts ...TOption) (im *InputModel) {
 	ti.TextStyle = focusStyle
 	im = &InputModel{
 		textInput: &ti,
+		helpStr:   helpStyle(`Press "Enter" to end input, "Esc" to quit.`),
 	}
-
 	for _, opt := range opts {
 		opt(im)
 	}
 	return
+}
+
+func (that *InputModel) SetHelpStr(help string) {
+	if help == "" {
+		that.helpStr = ""
+		return
+	}
+	that.helpStr = helpStyle(help)
 }
 
 func (that *InputModel) Init() tea.Cmd {
@@ -96,11 +105,15 @@ func (that *InputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (that *InputModel) View() string {
-	return fmt.Sprintf(
-		"%s\n%s\n",
-		that.textInput.View(),
-		helpStyle(`Press "Enter" to end input, "Esc" to quit.`),
-	) + "\n"
+	r := fmt.Sprintf("%s\n", that.textInput.View()) + "\n"
+	if that.helpStr != "" {
+		r = fmt.Sprintf(
+			"%s\n%s\n",
+			that.textInput.View(),
+			helpStyle(`Press "Enter" to end input, "Esc" to quit.`),
+		) + "\n"
+	}
+	return r
 }
 
 func (that *InputModel) Value() string {

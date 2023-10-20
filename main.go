@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
@@ -161,12 +162,14 @@ func main() {
 	// cfm.Run()
 	// fmt.Println(cfm.Result())
 
-	// mInput := input.NewMultiInput()
-	// mInput.AddOneItem("url", input.MWithWidth(60))
-	// mInput.AddOneItem("username", input.MWithWidth(60))
-	// mInput.AddOneItem("password", input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
-	// mInput.Run()
-	// fmt.Printf("%+v\n", mInput.Values())
+	mInput := input.NewMultiInput()
+	mInput.AddOneItem("url", input.MWithWidth(60))
+	mInput.AddOneItem("username", input.MWithWidth(60))
+	mInput.AddOneItem("password", input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
+	// mInput.AddOneOption([]string{"hello", "golang", "test"}, input.MWithWidth(60))
+	mInput.Run()
+	fmt.Printf("%+v\n", mInput.Values())
+
 	// w := &sync.WaitGroup{}
 	// for i := 0; i < 1000; i++ {
 	// 	w.Add(1)
@@ -184,12 +187,12 @@ func main() {
 	// archiver.ArchiverTest()
 	// archiver.ZipTest()
 
-	values := []string{
-		"test1",
-		"hello2",
-		"golang3",
-	}
-	opt := input.NewOption(values, input.WithCharlimit(100))
-	opt.Run()
-	fmt.Println(opt.Value())
+	// values := []string{
+	// 	"test1",
+	// 	"hello2",
+	// 	"golang3",
+	// }
+	// opt := input.NewOption(values, input.WithCharlimit(100))
+	// opt.Run()
+	// fmt.Println(opt.Value())
 }

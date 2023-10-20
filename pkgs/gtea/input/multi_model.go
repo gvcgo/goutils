@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 )
 
 var (
@@ -22,20 +23,24 @@ var (
 	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Submit"))
 )
 
+type Inputer interface {
+	View() string
+}
+
 type InputList struct {
-	inputList []textinput.Model
+	inputList []Inputer
 	nameList  []string
 }
 
 func NewInputList() (ipl *InputList) {
 	ipl = &InputList{
-		inputList: []textinput.Model{},
+		inputList: []Inputer{},
 		nameList:  []string{},
 	}
 	return
 }
 
-func (that *InputList) Add(name string, ipt textinput.Model) {
+func (that *InputList) Add(name string, ipt Inputer) {
 	that.inputList = append(that.inputList, ipt)
 	that.nameList = append(that.nameList, name)
 }
@@ -44,12 +49,106 @@ func (that *InputList) Len() int {
 	return len(that.inputList)
 }
 
-func (that *InputList) GetByIndex(index int) textinput.Model {
+func (that *InputList) GetByIndex(index int) Inputer {
 	return that.inputList[index]
 }
 
 func (that *InputList) GetNameByIndex(index int) string {
 	return that.nameList[index]
+}
+
+func (that *InputList) SetPromptStyleByIndex(index int, style lipgloss.Style) {
+	m := that.GetByIndex(index)
+	switch mType := m.(type) {
+	case textinput.Model:
+		mType.PromptStyle = style
+	case *OptionModel:
+		mType.InputModel.textInput.PromptStyle = style
+	default:
+	}
+}
+
+func (that *InputList) SetTextStyle(index int, style lipgloss.Style) {
+	m := that.GetByIndex(index)
+	switch mType := m.(type) {
+	case textinput.Model:
+		mType.TextStyle = style
+	case *OptionModel:
+		mType.InputModel.textInput.TextStyle = style
+	default:
+	}
+}
+
+func (that *InputList) SetCursorMode(index int, mode cursor.Mode) (cmd tea.Cmd) {
+	m := that.GetByIndex(index)
+	switch mType := m.(type) {
+	case textinput.Model:
+		cmd = mType.Cursor.SetMode(mode)
+	case *OptionModel:
+		cmd = mType.InputModel.textInput.Cursor.SetMode(mode)
+	default:
+	}
+	return
+}
+
+func (that *InputList) Focus(index int) (cmd tea.Cmd) {
+	m := that.GetByIndex(index)
+	switch mType := m.(type) {
+	case textinput.Model:
+		cmd = mType.Focus()
+	case *OptionModel:
+		cmd = mType.InputModel.textInput.Focus()
+	default:
+	}
+	return
+}
+
+func (that *InputList) Blur(index int) {
+	m := that.GetByIndex(index)
+	switch mType := m.(type) {
+	case textinput.Model:
+		mType.Blur()
+	case *OptionModel:
+		mType.InputModel.textInput.Blur()
+	default:
+	}
+}
+
+func (that *InputList) Value(index int) (v string) {
+	m := that.GetByIndex(index)
+	switch mType := m.(type) {
+	case textinput.Model:
+		v = mType.Value()
+	case *OptionModel:
+		v = mType.InputModel.textInput.Value()
+	default:
+	}
+	return
+}
+
+func (that *InputList) IsFocusedOnOption(focusIdx int) (r bool) {
+	m := that.GetByIndex(focusIdx)
+	switch m.(type) {
+	case textinput.Model:
+		return false
+	case *OptionModel:
+		return true
+	default:
+	}
+	return
+}
+
+func (that *InputList) Update(index int, msg tea.Msg) (m Inputer, cmd tea.Cmd) {
+	m = that.GetByIndex(index)
+	switch mType := m.(type) {
+	case textinput.Model:
+		m, cmd = mType.Update(msg)
+
+	case *OptionModel:
+		m, cmd = mType.Update(msg)
+	default:
+	}
+	return
 }
 
 type MOption func(ipt *textinput.Model)
@@ -114,6 +213,19 @@ func (that *InputMultiModel) AddOneInput(key string, opts ...MOption) {
 	that.inputs.Add(key, ipt)
 }
 
+func (that *InputMultiModel) AddOneOption(values []string, opts ...MOption) {
+	if len(values) == 0 {
+		gprint.PrintError("option value list is empty")
+		return
+	}
+	option := NewOptionModel(values)
+	for _, opt := range opts {
+		opt(option.InputModel.textInput)
+	}
+	option.InputModel.textInput.Cursor.Style = cursorStyle
+	that.inputs.Add(values[0], option)
+}
+
 func (that *InputMultiModel) Init() tea.Cmd {
 	return textinput.Blink
 }
@@ -132,7 +244,7 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			cmds := make([]tea.Cmd, that.inputs.Len())
 			for i := 0; i < that.inputs.Len(); i++ {
-				cmds[i] = that.inputs.inputList[i].Cursor.SetMode(that.cursorMode)
+				cmds[i] = that.inputs.SetCursorMode(i, that.cursorMode)
 			}
 			return that, tea.Batch(cmds...)
 
@@ -144,6 +256,11 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// If so, exit.
 			if s == "enter" && that.focusIndex == that.inputs.Len() {
 				return that, that.submitCmd
+			}
+
+			if that.inputs.IsFocusedOnOption(that.focusIndex) && (s == "down" || s == "up") {
+				_, cmd := that.inputs.Update(that.focusIndex, msg)
+				return that, cmd
 			}
 
 			// Cycle indexes
@@ -163,15 +280,15 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			for i := 0; i < that.inputs.Len(); i++ {
 				if i == that.focusIndex {
 					// Set focused state
-					cmds[i] = that.inputs.inputList[i].Focus()
-					that.inputs.inputList[i].PromptStyle = focusedStyle
-					that.inputs.inputList[i].TextStyle = focusedStyle
+					cmds[i] = that.inputs.Focus(i)
+					that.inputs.SetPromptStyleByIndex(i, focusedStyle)
+					that.inputs.SetTextStyle(i, focusedStyle)
 					continue
 				}
 				// Remove focused state
-				that.inputs.inputList[i].Blur()
-				that.inputs.inputList[i].PromptStyle = noStyle
-				that.inputs.inputList[i].TextStyle = noStyle
+				that.inputs.Blur(i)
+				that.inputs.SetPromptStyleByIndex(i, noStyle)
+				that.inputs.SetTextStyle(i, noStyle)
 			}
 
 			return that, tea.Batch(cmds...)
@@ -189,10 +306,9 @@ func (that *InputMultiModel) updateInputs(msg tea.Msg) tea.Cmd {
 
 	// Only text inputs with Focus() set will respond, so it's safe to simply
 	// update all of them here without any further logic.
-	for i, ipt := range that.inputs.inputList {
-		that.inputs.inputList[i], cmds[i] = ipt.Update(msg)
+	for i := range that.inputs.inputList {
+		that.inputs.inputList[i], cmds[i] = that.inputs.Update(i, msg)
 	}
-
 	return tea.Batch(cmds...)
 }
 
@@ -222,7 +338,7 @@ func (that *InputMultiModel) View() string {
 func (that *InputMultiModel) Values() map[string]string {
 	r := make(map[string]string)
 	for idx, name := range that.inputs.nameList {
-		r[name] = that.inputs.inputList[idx].Value()
+		r[name] = that.inputs.Value(idx)
 	}
 	return r
 }
