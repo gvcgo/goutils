@@ -22,8 +22,8 @@ func (that *MultiInput) AddOneItem(key string, opts ...MOption) {
 	that.model.AddOneInput(key, opts...)
 }
 
-func (that *MultiInput) AddOneOption(values []string, opts ...MOption) {
-	that.model.AddOneOption(values, opts...)
+func (that *MultiInput) AddOneOption(name string, values []string, opts ...MOption) {
+	that.model.AddOneOption(name, values, opts...)
 }
 
 func (that *MultiInput) Run() {

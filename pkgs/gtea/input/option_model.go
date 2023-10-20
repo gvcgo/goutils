@@ -3,6 +3,7 @@ package input
 import (
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/cursor"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
@@ -34,14 +35,14 @@ func (that *OptionModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "esc", "enter":
 			return that, tea.Quit
-		case "up":
+		case "up", "k":
 			if that.Idx < len(that.ValueList)-1 {
 				that.Idx++
 			} else {
 				that.Idx = 0
 			}
 			that.InputModel.textInput.SetValue(that.ValueList[that.Idx])
-		case "down":
+		case "down", "j":
 			if that.Idx > 0 {
 				that.Idx--
 			} else {
@@ -71,4 +72,24 @@ func (that *OptionModel) SetPromptStyle(style lipgloss.Style) {
 
 func (that *OptionModel) SetTextStyle(style lipgloss.Style) {
 	that.InputModel.textInput.TextStyle = style
+}
+
+func (that *OptionModel) Focus() tea.Cmd {
+	return that.InputModel.textInput.Focus()
+}
+
+func (that *OptionModel) Value() string {
+	return that.InputModel.textInput.Value()
+}
+
+func (that *OptionModel) Blur() {
+	that.InputModel.textInput.Blur()
+}
+
+func (that *OptionModel) SetCursorMode(mode cursor.Mode) tea.Cmd {
+	return that.InputModel.textInput.Cursor.SetMode(mode)
+}
+
+func (that *OptionModel) IsOption() bool {
+	return true
 }

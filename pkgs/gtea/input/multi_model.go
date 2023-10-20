@@ -24,7 +24,16 @@ var (
 )
 
 type Inputer interface {
+	Init() tea.Cmd
 	View() string
+	Update(tea.Msg) (tea.Model, tea.Cmd)
+	Focus() tea.Cmd
+	Value() string
+	SetPromptStyle(style lipgloss.Style)
+	SetTextStyle(style lipgloss.Style)
+	Blur()
+	SetCursorMode(mode cursor.Mode) tea.Cmd
+	IsOption() bool
 }
 
 type InputList struct {
@@ -55,100 +64,6 @@ func (that *InputList) GetByIndex(index int) Inputer {
 
 func (that *InputList) GetNameByIndex(index int) string {
 	return that.nameList[index]
-}
-
-func (that *InputList) SetPromptStyleByIndex(index int, style lipgloss.Style) {
-	m := that.GetByIndex(index)
-	switch mType := m.(type) {
-	case textinput.Model:
-		mType.PromptStyle = style
-	case *OptionModel:
-		mType.InputModel.textInput.PromptStyle = style
-	default:
-	}
-}
-
-func (that *InputList) SetTextStyle(index int, style lipgloss.Style) {
-	m := that.GetByIndex(index)
-	switch mType := m.(type) {
-	case textinput.Model:
-		mType.TextStyle = style
-	case *OptionModel:
-		mType.InputModel.textInput.TextStyle = style
-	default:
-	}
-}
-
-func (that *InputList) SetCursorMode(index int, mode cursor.Mode) (cmd tea.Cmd) {
-	m := that.GetByIndex(index)
-	switch mType := m.(type) {
-	case textinput.Model:
-		cmd = mType.Cursor.SetMode(mode)
-	case *OptionModel:
-		cmd = mType.InputModel.textInput.Cursor.SetMode(mode)
-	default:
-	}
-	return
-}
-
-func (that *InputList) Focus(index int) (cmd tea.Cmd) {
-	m := that.GetByIndex(index)
-	switch mType := m.(type) {
-	case textinput.Model:
-		cmd = mType.Focus()
-	case *OptionModel:
-		cmd = mType.InputModel.textInput.Focus()
-	default:
-	}
-	return
-}
-
-func (that *InputList) Blur(index int) {
-	m := that.GetByIndex(index)
-	switch mType := m.(type) {
-	case textinput.Model:
-		mType.Blur()
-	case *OptionModel:
-		mType.InputModel.textInput.Blur()
-	default:
-	}
-}
-
-func (that *InputList) Value(index int) (v string) {
-	m := that.GetByIndex(index)
-	switch mType := m.(type) {
-	case textinput.Model:
-		v = mType.Value()
-	case *OptionModel:
-		v = mType.InputModel.textInput.Value()
-	default:
-	}
-	return
-}
-
-func (that *InputList) IsFocusedOnOption(focusIdx int) (r bool) {
-	m := that.GetByIndex(focusIdx)
-	switch m.(type) {
-	case textinput.Model:
-		return false
-	case *OptionModel:
-		return true
-	default:
-	}
-	return
-}
-
-func (that *InputList) Update(index int, msg tea.Msg) (m Inputer, cmd tea.Cmd) {
-	m = that.GetByIndex(index)
-	switch mType := m.(type) {
-	case textinput.Model:
-		m, cmd = mType.Update(msg)
-
-	case *OptionModel:
-		m, cmd = mType.Update(msg)
-	default:
-	}
-	return
 }
 
 type MOption func(ipt *textinput.Model)
@@ -184,6 +99,15 @@ func MWithEchoMode(echoMode textinput.EchoMode) MOption {
 	}
 }
 
+func MWithPrompt(prompt string) MOption {
+	return func(ipt *textinput.Model) {
+		if !strings.HasSuffix(prompt, ": ") {
+			prompt += ": "
+		}
+		ipt.Prompt = prompt
+	}
+}
+
 type InputMultiModel struct {
 	focusIndex int
 	inputs     *InputList
@@ -204,26 +128,34 @@ func (that *InputMultiModel) SetSubmitCmd(scmd tea.Cmd) {
 }
 
 func (that *InputMultiModel) AddOneInput(key string, opts ...MOption) {
-	ipt := textinput.New()
+	ipt := NewInputModel()
+	ipt.SetHelpStr("")
 	for _, opt := range opts {
-		opt(&ipt)
+		opt(ipt.textInput)
 	}
-	MWithPlaceholder(key)(&ipt)
-	ipt.Cursor.Style = cursorStyle
+	MWithPlaceholder(key)(ipt.textInput)
+	MWithPrompt(key)(ipt.textInput)
+	ipt.textInput.Cursor.Style = cursorStyle
 	that.inputs.Add(key, ipt)
+	if that.inputs.Len() == 1 {
+		that.inputs.GetByIndex(0).Focus()
+	}
 }
 
-func (that *InputMultiModel) AddOneOption(values []string, opts ...MOption) {
+func (that *InputMultiModel) AddOneOption(name string, values []string, opts ...MOption) {
 	if len(values) == 0 {
 		gprint.PrintError("option value list is empty")
 		return
 	}
-	option := NewOptionModel(values)
+	option := NewOptionModel(values, WithPrompt(name))
 	for _, opt := range opts {
 		opt(option.InputModel.textInput)
 	}
 	option.InputModel.textInput.Cursor.Style = cursorStyle
-	that.inputs.Add(values[0], option)
+	that.inputs.Add(name, option)
+	if that.inputs.Len() == 1 {
+		that.inputs.GetByIndex(0).Focus()
+	}
 }
 
 func (that *InputMultiModel) Init() tea.Cmd {
@@ -244,7 +176,7 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			cmds := make([]tea.Cmd, that.inputs.Len())
 			for i := 0; i < that.inputs.Len(); i++ {
-				cmds[i] = that.inputs.SetCursorMode(i, that.cursorMode)
+				cmds[i] = that.inputs.GetByIndex(i).SetCursorMode(that.cursorMode)
 			}
 			return that, tea.Batch(cmds...)
 
@@ -258,16 +190,25 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return that, that.submitCmd
 			}
 
-			if that.inputs.IsFocusedOnOption(that.focusIndex) && (s == "down" || s == "up") {
-				_, cmd := that.inputs.Update(that.focusIndex, msg)
+			if that.inputs.GetByIndex(that.focusIndex).IsOption() && (s == "down" || s == "up") {
+				_, cmd := that.inputs.GetByIndex(that.focusIndex).Update(msg)
 				return that, cmd
 			}
 
-			// Cycle indexes
-			if s == "up" || s == "shift+tab" {
-				that.focusIndex--
-			} else {
-				that.focusIndex++
+			// Cycle indexes, including [Submit]
+			switch s {
+			case "up", "shift+tab":
+				if that.focusIndex < 1 {
+					that.focusIndex = that.inputs.Len()
+				} else {
+					that.focusIndex--
+				}
+			default:
+				if that.focusIndex > that.inputs.Len()-1 {
+					that.focusIndex = 0
+				} else {
+					that.focusIndex++
+				}
 			}
 
 			if that.focusIndex > that.inputs.Len() {
@@ -280,15 +221,15 @@ func (that *InputMultiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			for i := 0; i < that.inputs.Len(); i++ {
 				if i == that.focusIndex {
 					// Set focused state
-					cmds[i] = that.inputs.Focus(i)
-					that.inputs.SetPromptStyleByIndex(i, focusedStyle)
-					that.inputs.SetTextStyle(i, focusedStyle)
+					cmds[i] = that.inputs.GetByIndex(i).Focus()
+					that.inputs.GetByIndex(i).SetPromptStyle(focusedStyle)
+					that.inputs.GetByIndex(i).SetTextStyle(focusedStyle)
 					continue
 				}
 				// Remove focused state
-				that.inputs.Blur(i)
-				that.inputs.SetPromptStyleByIndex(i, noStyle)
-				that.inputs.SetTextStyle(i, noStyle)
+				that.inputs.GetByIndex(i).Blur()
+				that.inputs.GetByIndex(i).SetPromptStyle(noStyle)
+				that.inputs.GetByIndex(i).SetTextStyle(noStyle)
 			}
 
 			return that, tea.Batch(cmds...)
@@ -307,7 +248,7 @@ func (that *InputMultiModel) updateInputs(msg tea.Msg) tea.Cmd {
 	// Only text inputs with Focus() set will respond, so it's safe to simply
 	// update all of them here without any further logic.
 	for i := range that.inputs.inputList {
-		that.inputs.inputList[i], cmds[i] = that.inputs.Update(i, msg)
+		_, cmds[i] = that.inputs.GetByIndex(i).Update(msg)
 	}
 	return tea.Batch(cmds...)
 }
@@ -316,7 +257,7 @@ func (that *InputMultiModel) View() string {
 	var b strings.Builder
 
 	for i := range that.inputs.inputList {
-		b.WriteString(that.inputs.inputList[i].View())
+		b.WriteString(that.inputs.GetByIndex(i).View())
 		if i < that.inputs.Len()-1 {
 			b.WriteRune('\n')
 		}
@@ -326,7 +267,7 @@ func (that *InputMultiModel) View() string {
 	if that.focusIndex == that.inputs.Len() {
 		button = &focusedButton
 	}
-	fmt.Fprintf(&b, "\n\n%s\n\n", *button)
+	fmt.Fprintf(&b, "\n%s\n", *button)
 
 	b.WriteString(mhelpStyle.Render("cursor mode is "))
 	b.WriteString(cursorModeHelpStyle.Render(that.cursorMode.String()))
@@ -338,7 +279,7 @@ func (that *InputMultiModel) View() string {
 func (that *InputMultiModel) Values() map[string]string {
 	r := make(map[string]string)
 	for idx, name := range that.inputs.nameList {
-		r[name] = that.inputs.Value(idx)
+		r[name] = that.inputs.GetByIndex(idx).Value()
 	}
 	return r
 }

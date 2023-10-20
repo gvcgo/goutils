@@ -2,7 +2,9 @@ package input
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/charmbracelet/bubbles/cursor"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -38,6 +40,15 @@ func WithEchoChar(echoChar string) TOption {
 func WithEchoMode(echoMode textinput.EchoMode) TOption {
 	return func(ipm *InputModel) {
 		ipm.textInput.EchoMode = echoMode
+	}
+}
+
+func WithPrompt(prompt string) TOption {
+	return func(ipm *InputModel) {
+		if !strings.HasSuffix(prompt, ": ") {
+			prompt += ": "
+		}
+		ipm.textInput.Prompt = prompt
 	}
 }
 
@@ -105,21 +116,41 @@ func (that *InputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (that *InputModel) View() string {
-	r := fmt.Sprintf("%s\n", that.textInput.View()) + "\n"
+	r := fmt.Sprintf("%s\n", that.textInput.View())
 	if that.helpStr != "" {
 		r = fmt.Sprintf(
 			"%s\n%s\n",
 			that.textInput.View(),
 			helpStyle(`Press "Enter" to end input, "Esc" to quit.`),
-		) + "\n"
+		)
 	}
 	return r
+}
+
+func (that *InputModel) SetPromptStyle(style lipgloss.Style) {
+	that.textInput.PromptStyle = style
+}
+
+func (that *InputModel) SetTextStyle(style lipgloss.Style) {
+	that.textInput.TextStyle = style
 }
 
 func (that *InputModel) Value() string {
 	return that.textInput.Value()
 }
 
-func (that *InputModel) Focus() {
-	that.textInput.Focus()
+func (that *InputModel) Focus() tea.Cmd {
+	return that.textInput.Focus()
+}
+
+func (that *InputModel) Blur() {
+	that.textInput.Blur()
+}
+
+func (that *InputModel) SetCursorMode(mode cursor.Mode) tea.Cmd {
+	return that.textInput.Cursor.SetMode(mode)
+}
+
+func (that *InputModel) IsOption() bool {
+	return false
 }

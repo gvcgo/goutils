@@ -166,7 +166,7 @@ func main() {
 	mInput.AddOneItem("url", input.MWithWidth(60))
 	mInput.AddOneItem("username", input.MWithWidth(60))
 	mInput.AddOneItem("password", input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
-	// mInput.AddOneOption([]string{"hello", "golang", "test"}, input.MWithWidth(60))
+	mInput.AddOneOption("gpt_model", []string{"hello", "golang", "test"}, input.MWithWidth(60))
 	mInput.Run()
 	fmt.Printf("%+v\n", mInput.Values())
 
