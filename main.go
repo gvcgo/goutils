@@ -1,7 +1,9 @@
 package main
 
 import (
-	"github.com/moqsien/goutils/pkgs/archiver"
+	"fmt"
+
+	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -180,5 +182,14 @@ func main() {
 	// 	git.SetWorkDir(`C:\Users\moqsien\data\projects\go\src\goutils`)
 	// 	git.ShowLatestTag()
 	// archiver.ArchiverTest()
-	archiver.ZipTest()
+	// archiver.ZipTest()
+
+	values := []string{
+		"test1",
+		"hello2",
+		"golang3",
+	}
+	opt := input.NewOption(values, input.WithCharlimit(100))
+	opt.Run()
+	fmt.Println(opt.Value())
 }
