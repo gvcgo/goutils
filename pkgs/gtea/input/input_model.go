@@ -68,8 +68,8 @@ type InputModel struct {
 func NewInputModel(opts ...TOption) (im *InputModel) {
 	ti := textinput.New()
 	ti.Cursor.Style = focusStyle
-	ti.PromptStyle = focusStyle
 	ti.TextStyle = focusStyle
+
 	im = &InputModel{
 		textInput: &ti,
 		helpStr:   helpStyle(`Press "Enter" to end input, "Esc" to quit.`),
