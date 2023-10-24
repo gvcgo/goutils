@@ -213,7 +213,7 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 var helpStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#626262")).Render
 
 func (that *SelectorModel) View() string {
-	return "\n" + that.list.View() + "\n" + helpStyle(`Press Tab/Esc to confirm selections.`) + "\n"
+	return lipgloss.JoinVertical(lipgloss.Left, that.list.View(), helpStyle(`Press Tab/Esc to confirm selections.`))
 }
 
 func (that *SelectorModel) ChosenList() (r []string) {
