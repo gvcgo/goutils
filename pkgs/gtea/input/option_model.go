@@ -63,7 +63,7 @@ func (that *OptionModel) View() string {
 	return fmt.Sprintf(
 		"%s\n",
 		that.textInput.View(),
-	) + "\n"
+	)
 }
 
 func (that *OptionModel) SetPromptStyle(style lipgloss.Style) {

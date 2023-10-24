@@ -109,18 +109,24 @@ func MWithPrompt(prompt string) MOption {
 }
 
 type InputMultiModel struct {
-	focusIndex int
-	inputs     *InputList
-	cursorMode cursor.Mode
-	submitCmd  tea.Cmd
+	focusIndex         int
+	inputs             *InputList
+	cursorMode         cursor.Mode
+	submitCmd          tea.Cmd
+	inputPromptPattern string
 }
 
 func NewInputMultiModel() (imm *InputMultiModel) {
 	imm = &InputMultiModel{
-		inputs:    NewInputList(),
-		submitCmd: tea.Quit,
+		inputs:             NewInputList(),
+		submitCmd:          tea.Quit,
+		inputPromptPattern: "%-10s",
 	}
 	return
+}
+
+func (that *InputMultiModel) SetInputPromptPattern(pattern string) {
+	that.inputPromptPattern = pattern
 }
 
 func (that *InputMultiModel) SetSubmitCmd(scmd tea.Cmd) {
@@ -134,7 +140,7 @@ func (that *InputMultiModel) AddOneInput(key string, opts ...MOption) {
 		opt(ipt.textInput)
 	}
 	MWithPlaceholder(key)(ipt.textInput)
-	MWithPrompt(key)(ipt.textInput)
+	MWithPrompt(fmt.Sprintf(that.inputPromptPattern, key))(ipt.textInput)
 	ipt.textInput.Cursor.Style = cursorStyle
 	that.inputs.Add(key, ipt)
 	if that.inputs.Len() == 1 {
@@ -147,7 +153,7 @@ func (that *InputMultiModel) AddOneOption(name string, values []string, opts ...
 		gprint.PrintError("option value list is empty")
 		return
 	}
-	option := NewOptionModel(values, WithPrompt(name))
+	option := NewOptionModel(values, WithPrompt(fmt.Sprintf(that.inputPromptPattern, name)))
 	for _, opt := range opts {
 		opt(option.InputModel.textInput)
 	}
@@ -254,26 +260,19 @@ func (that *InputMultiModel) updateInputs(msg tea.Msg) tea.Cmd {
 }
 
 func (that *InputMultiModel) View() string {
-	var b strings.Builder
-
+	rows := []string{}
 	for i := range that.inputs.inputList {
-		b.WriteString(that.inputs.GetByIndex(i).View())
-		if i < that.inputs.Len()-1 {
-			b.WriteRune('\n')
-		}
+		rows = append(rows, that.inputs.GetByIndex(i).View())
 	}
-
 	button := &blurredButton
 	if that.focusIndex == that.inputs.Len() {
 		button = &focusedButton
 	}
-	fmt.Fprintf(&b, "\n%s\n", *button)
+	rows = append(rows, *button)
 
-	b.WriteString(mhelpStyle.Render("cursor mode is "))
-	b.WriteString(cursorModeHelpStyle.Render(that.cursorMode.String()))
-	b.WriteString(mhelpStyle.Render(" (ctrl+r to change style)"))
-
-	return b.String()
+	helpStr := mhelpStyle.Render("cursor mode is ") + cursorModeHelpStyle.Render(that.cursorMode.String()) + mhelpStyle.Render(" (ctrl+r to change style)")
+	rows = append(rows, helpStr)
+	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }
 
 func (that *InputMultiModel) Values() map[string]string {
