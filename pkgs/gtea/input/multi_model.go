@@ -139,7 +139,7 @@ func (that *InputMultiModel) AddOneInput(key string, opts ...MOption) {
 	for _, opt := range opts {
 		opt(ipt.textInput)
 	}
-	MWithPlaceholder(key)(ipt.textInput)
+	// MWithPlaceholder(key)(ipt.textInput)
 	MWithPrompt(fmt.Sprintf(that.inputPromptPattern, key))(ipt.textInput)
 	ipt.textInput.Cursor.Style = cursorStyle
 	that.inputs.Add(key, ipt)
