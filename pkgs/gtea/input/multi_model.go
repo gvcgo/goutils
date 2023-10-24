@@ -125,7 +125,7 @@ func NewInputMultiModel() (imm *InputMultiModel) {
 	return
 }
 
-func (that *InputMultiModel) SetInputPromptPattern(pattern string) {
+func (that *InputMultiModel) SetInputPromptFormat(pattern string) {
 	that.inputPromptPattern = pattern
 }
 
