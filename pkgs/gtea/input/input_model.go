@@ -18,6 +18,12 @@ func WithPlaceholder(pHolder string) TOption {
 	}
 }
 
+func WithPlaceholderStyle(style lipgloss.Style) TOption {
+	return func(ipm *InputModel) {
+		ipm.textInput.PlaceholderStyle = style
+	}
+}
+
 func WithCharlimit(cLimit int) TOption {
 	return func(ipm *InputModel) {
 		ipm.textInput.CharLimit = cLimit
@@ -69,7 +75,7 @@ func NewInputModel(opts ...TOption) (im *InputModel) {
 	ti := textinput.New()
 	ti.Cursor.Style = focusStyle
 	ti.TextStyle = focusStyle
-
+	ti.PlaceholderStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#008000"))
 	im = &InputModel{
 		textInput: &ti,
 		helpStr:   helpStyle(`Press "Enter" to end input, "Esc" to quit.`),

@@ -13,7 +13,7 @@ import (
 
 var (
 	focusedStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	blurredStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
+	blurredStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("#008000"))
 	cursorStyle         = focusedStyle.Copy()
 	noStyle             = lipgloss.NewStyle()
 	mhelpStyle          = blurredStyle.Copy()
@@ -71,6 +71,12 @@ type MOption func(ipt *textinput.Model)
 func MWithPlaceholder(pHolder string) MOption {
 	return func(ipt *textinput.Model) {
 		ipt.Placeholder = pHolder
+	}
+}
+
+func MWithPlaceholderStyle(style lipgloss.Style) MOption {
+	return func(ipt *textinput.Model) {
+		ipt.PlaceholderStyle = style
 	}
 }
 
