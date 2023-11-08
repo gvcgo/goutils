@@ -41,5 +41,7 @@ func (that *TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (that *TableModel) View() string {
-	return baseStyle.Render(that.table.View()) + "\n"
+	helpStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500"))
+	helpStr := `Press "↑" or "k" to move up, "↓" or "j" to move down, "q" to quit. And "g" to goto first line, "G" to last line.`
+	return baseStyle.Render(that.table.View()) + "\n" + helpStyle.Render(helpStr) + "\n"
 }
