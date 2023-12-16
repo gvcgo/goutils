@@ -3,7 +3,7 @@ package gtable
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/program"
 )
 
 type Table struct {
@@ -42,7 +42,5 @@ func (that *Table) SetProgramOpts(opts ...tea.ProgramOption) {
 }
 
 func (that *Table) Run() {
-	if _, err := that.Program.Run(); err != nil {
-		gprint.PrintError("%+v", err)
-	}
+	program.Run(that.Program)
 }

@@ -4,7 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/gogf/gf/container/gtree"
 	gfutil "github.com/gogf/gf/util/gutil"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/program"
 )
 
 type ItemList struct {
@@ -63,9 +63,7 @@ func (that *Selector) SetProgramOpts(opts ...tea.ProgramOption) {
 }
 
 func (that *Selector) Run() {
-	if _, err := that.Program.Run(); err != nil {
-		gprint.PrintError("%+v", err)
-	}
+	program.Run(that.Program)
 }
 
 func (that *Selector) Value() (r []interface{}) {

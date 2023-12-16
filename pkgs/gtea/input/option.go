@@ -2,7 +2,7 @@ package input
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/program"
 )
 
 type Option struct {
@@ -27,9 +27,7 @@ func (that *Option) SetProgramOpts(opts ...tea.ProgramOption) {
 }
 
 func (that *Option) Run() {
-	if _, err := that.Program.Run(); err != nil {
-		gprint.PrintError("%+v", err)
-	}
+	program.Run(that.Program)
 }
 
 func (that *Option) Value() string {

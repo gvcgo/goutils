@@ -3,6 +3,7 @@ package input
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/program"
 )
 
 type MultiInput struct {
@@ -40,9 +41,7 @@ func (that *MultiInput) Run() {
 	if that.Program == nil {
 		that.Program = tea.NewProgram(that.model)
 	}
-	if _, err := that.Program.Run(); err != nil {
-		gprint.PrintError("%+v", err)
-	}
+	program.Run(that.Program)
 }
 
 func (that *MultiInput) Values() map[string]string {

@@ -2,7 +2,7 @@ package confirm
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/program"
 )
 
 type COption func(confirm *Confirm)
@@ -37,9 +37,7 @@ func (cf *Confirm) SetProgramOpts(opts ...tea.ProgramOption) {
 }
 
 func (that *Confirm) Run() {
-	if _, err := that.Program.Run(); err != nil {
-		gprint.PrintError("%+v", err)
-	}
+	program.Run(that.Program)
 }
 
 func (that *Confirm) Result() bool {
