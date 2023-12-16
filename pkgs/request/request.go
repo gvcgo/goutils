@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-resty/resty/v2"
 	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/gtea/bar"
@@ -36,6 +37,7 @@ type Fetcher struct {
 	checkSumType string
 	lock         *sync.Mutex
 	dbar         *bar.DownloadBar
+	programOpts  []tea.ProgramOption
 }
 
 func NewFetcher() *Fetcher {
@@ -118,6 +120,10 @@ func (that *Fetcher) setMisc() {
 	if that.NoRedirect {
 		that.client = that.client.SetRedirectPolicy(resty.NoRedirectPolicy())
 	}
+}
+
+func (that *Fetcher) SetProgramOpts(opts ...tea.ProgramOption) {
+	that.programOpts = opts
 }
 
 func (that *Fetcher) RemoveProxy() {
@@ -334,6 +340,9 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 			return that.GetFile(localPath, force...)
 		}
 		that.dbar = bar.NewDownloadBar(bar.WithTitle(that.parseFilename(localPath)), bar.WithDefaultGradient(), bar.WithWidth(30))
+		if len(that.programOpts) > 0 {
+			that.dbar.SetProgramOpts(that.programOpts...)
+		}
 		that.dbar.SetTotal(content_length)
 		that.dbar.SetSweep(func() {
 			os.RemoveAll(localPath)
