@@ -14,11 +14,16 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-resty/resty/v2"
+	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/gtea/bar"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	utils "github.com/moqsien/goutils/pkgs/gutils"
 	nproxy "golang.org/x/net/proxy"
+)
+
+const (
+	WaitBarCompleteEnv string = "REQUEST_WAIT_BAR_COMPLETE"
 )
 
 type Fetcher struct {
@@ -361,6 +366,12 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 		that.multiDownload(localPath, int(content_length))
 		size = that.size
 	}
+	// wait for progress bar to complete.
+	toSleep := gconv.Int(os.Getenv(WaitBarCompleteEnv))
+	if toSleep <= 0 {
+		toSleep = 2
+	}
+	time.Sleep(time.Duration(toSleep) * time.Second)
 	return
 }
 
