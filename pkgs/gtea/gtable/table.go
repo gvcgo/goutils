@@ -35,6 +35,12 @@ func NewTable(opts ...Option) (t *Table) {
 	return
 }
 
+func (that *Table) SetProgramOpts(opts ...tea.ProgramOption) {
+	if that.model != nil {
+		that.Program = tea.NewProgram(that.model, opts...)
+	}
+}
+
 func (that *Table) Run() {
 	if _, err := that.Program.Run(); err != nil {
 		gprint.PrintError("%+v", err)

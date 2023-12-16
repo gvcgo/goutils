@@ -30,6 +30,12 @@ func NewConfirm(opts ...COption) (cfm *Confirm) {
 	return
 }
 
+func (cf *Confirm) SetProgramOpts(opts ...tea.ProgramOption) {
+	if cf.model != nil {
+		cf.Program = tea.NewProgram(cf.model, opts...)
+	}
+}
+
 func (that *Confirm) Run() {
 	if _, err := that.Program.Run(); err != nil {
 		gprint.PrintError("%+v", err)

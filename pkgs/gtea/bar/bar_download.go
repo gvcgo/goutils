@@ -30,6 +30,12 @@ func NewDownloadBar(opts ...Option) (bar *DownloadBar) {
 	return
 }
 
+func (bar *DownloadBar) SetProgramOpts(opts ...tea.ProgramOption) {
+	if bar.model != nil {
+		bar.Program = tea.NewProgram(bar.model, opts...)
+	}
+}
+
 func (bar *DownloadBar) SetTotal(total int64) {
 	bar.total = total
 }

@@ -23,6 +23,12 @@ func NewInput(opts ...TOption) (ipt *Input) {
 	return
 }
 
+func (that *Input) SetProgramOpts(opts ...tea.ProgramOption) {
+	if that.model != nil {
+		that.Program = tea.NewProgram(that.model, opts...)
+	}
+}
+
 func (that *Input) Run() {
 	if _, err := that.Program.Run(); err != nil {
 		gprint.PrintError("%+v", err)

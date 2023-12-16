@@ -18,6 +18,12 @@ func NewMultiInput() (mipt *MultiInput) {
 	return
 }
 
+func (that *MultiInput) SetProgramOpts(opts ...tea.ProgramOption) {
+	if that.model != nil {
+		that.Program = tea.NewProgram(that.model, opts...)
+	}
+}
+
 func (that *MultiInput) AddOneItem(key string, opts ...MOption) {
 	that.model.AddOneInput(key, opts...)
 }

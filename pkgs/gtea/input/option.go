@@ -20,6 +20,12 @@ func NewOption(values []string, opts ...TOption) (option *Option) {
 	return
 }
 
+func (that *Option) SetProgramOpts(opts ...tea.ProgramOption) {
+	if that.model != nil {
+		that.Program = tea.NewProgram(that.model, opts...)
+	}
+}
+
 func (that *Option) Run() {
 	if _, err := that.Program.Run(); err != nil {
 		gprint.PrintError("%+v", err)

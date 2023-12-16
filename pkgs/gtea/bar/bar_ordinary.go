@@ -10,6 +10,7 @@ import (
 
 type OrdinaryBar struct {
 	Program         *tea.Program
+	model           *DownloadModel
 	total           int64
 	processed       int64
 	succeeded       int64
@@ -23,9 +24,16 @@ func NewOrdinaryBar(opts ...Option) (bar *OrdinaryBar) {
 	}
 	bar = &OrdinaryBar{
 		Program: tea.NewProgram(model),
+		model:   model,
 		lock:    &sync.Mutex{},
 	}
 	return
+}
+
+func (bar *OrdinaryBar) SetProgramOpts(opts ...tea.ProgramOption) {
+	if bar.model != nil {
+		bar.Program = tea.NewProgram(bar.model, opts...)
+	}
 }
 
 func (bar *OrdinaryBar) SetTotal(total int64) {

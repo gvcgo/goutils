@@ -56,6 +56,12 @@ func NewSelector(itemList *ItemList, opts ...SOption) (sl *Selector) {
 	return
 }
 
+func (that *Selector) SetProgramOpts(opts ...tea.ProgramOption) {
+	if that.model != nil {
+		that.Program = tea.NewProgram(that.model, opts...)
+	}
+}
+
 func (that *Selector) Run() {
 	if _, err := that.Program.Run(); err != nil {
 		gprint.PrintError("%+v", err)
