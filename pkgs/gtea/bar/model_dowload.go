@@ -83,7 +83,7 @@ func (dm *DownloadModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
-var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
+var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Render
 
 func (dm *DownloadModel) View() string {
 	if dm.err != nil {
@@ -93,5 +93,5 @@ func (dm *DownloadModel) View() string {
 	pad := strings.Repeat(" ", padding)
 	return "\n" +
 		pad + dm.progress.View() + "\n" +
-		pad + helpStyle(`Press "q" to quit`) + "\n"
+		pad + helpStyle(`Press "q" to quit.`) + "\n"
 }
