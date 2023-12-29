@@ -3,3 +3,4 @@
 *.zip
 temp_*
 .DS_Store
+goutils

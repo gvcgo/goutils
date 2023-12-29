@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/charmbracelet/bubbles/textinput"
-	"github.com/moqsien/goutils/pkgs/gtea/input"
+	"github.com/moqsien/goutils/pkgs/ggit"
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -55,9 +52,10 @@ func main() {
 	// a.SetZipName("test.zip")
 	// err := a.ZipDir()
 	// fmt.Println(err)
-	// g := ggit.NewGit()
-	// g.SetProxyUrl("http://localhost:2023")
-	// g.CloneBySSH("git@github.com:moqsien/goktrl.git")
+	g := ggit.NewGit()
+	g.SetProxyUrl("http://localhost:2023")
+	g.CloneBySSH("git@github.com:jesseduffield/lazygit.git")
+
 	// g.AddTagAndPushToRemote("v1.3.9")
 	// g.DeleteTagAndPushToRemote("v1.3.9")
 	// err := g.CommitAndPush("update")
@@ -162,13 +160,13 @@ func main() {
 	// cfm.Run()
 	// fmt.Println(cfm.Result())
 
-	mInput := input.NewMultiInput()
-	mInput.AddOneItem("url", input.MWithWidth(60))
-	mInput.AddOneItem("username", input.MWithWidth(60))
-	mInput.AddOneItem("password", input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
-	mInput.AddOneOption("gpt_model", []string{"hello", "golang", "test"}, input.MWithWidth(60))
-	mInput.Run()
-	fmt.Printf("%+v\n", mInput.Values())
+	// mInput := input.NewMultiInput()
+	// mInput.AddOneItem("url", input.MWithWidth(60))
+	// mInput.AddOneItem("username", input.MWithWidth(60))
+	// mInput.AddOneItem("password", input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
+	// mInput.AddOneOption("gpt_model", []string{"hello", "golang", "test"}, input.MWithWidth(60))
+	// mInput.Run()
+	// fmt.Printf("%+v\n", mInput.Values())
 
 	// w := &sync.WaitGroup{}
 	// for i := 0; i < 1000; i++ {
