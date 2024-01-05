@@ -446,3 +446,17 @@ func (that *Fetcher) Delete() (r *resty.Response) {
 	}
 	return
 }
+
+func (that *Fetcher) Patch() (r *resty.Response) {
+	if that.client == nil {
+		that.client = resty.New()
+	}
+	that.setMisc()
+	if resp, err := that.client.SetDoNotParseResponse(true).R().SetBody(that.PostBody).Patch(that.Url); err != nil {
+		fmt.Println(err)
+		return
+	} else {
+		r = resp
+	}
+	return
+}

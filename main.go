@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"path/filepath"
-
 	"github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/moqsien/goutils/pkgs/storage"
 )
 
 type Comparable int
@@ -196,6 +194,6 @@ func main() {
 	// opt.Run()
 	// fmt.Println(opt.Value())
 
-	// remoter.GhTest()
-	fmt.Println("test: ", filepath.Join("", ""))
+	// storage.GhTest()
+	storage.GtTest()
 }
