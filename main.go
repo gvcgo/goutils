@@ -1,7 +1,9 @@
 package main
 
 import (
-	"github.com/moqsien/goutils/pkgs/ggit"
+	"fmt"
+	"path/filepath"
+
 	"github.com/moqsien/goutils/pkgs/gutils"
 )
 
@@ -52,9 +54,9 @@ func main() {
 	// a.SetZipName("test.zip")
 	// err := a.ZipDir()
 	// fmt.Println(err)
-	g := ggit.NewGit()
-	g.SetProxyUrl("http://localhost:2023")
-	g.CloneBySSH("git@github.com:jesseduffield/lazygit.git")
+	// g := ggit.NewGit()
+	// g.SetProxyUrl("http://localhost:2023")
+	// g.CloneBySSH("git@github.com:jesseduffield/lazygit.git")
 
 	// g.AddTagAndPushToRemote("v1.3.9")
 	// g.DeleteTagAndPushToRemote("v1.3.9")
@@ -193,4 +195,7 @@ func main() {
 	// opt := input.NewOption(values, input.WithCharlimit(100))
 	// opt.Run()
 	// fmt.Println(opt.Value())
+
+	// remoter.GhTest()
+	fmt.Println("test: ", filepath.Join("", ""))
 }
