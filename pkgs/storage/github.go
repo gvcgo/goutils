@@ -48,6 +48,7 @@ func (that *GhStorage) initiate() {
 	}
 }
 
+// Create a repo.
 func (that *GhStorage) CreateRepo(repoName string) (r []byte) {
 	// https://api.github.com/user/repos
 	that.fetcher.SetUrl(fmt.Sprintf("%s/%s", GithubAPI, "user/repos"))
@@ -62,6 +63,7 @@ func (that *GhStorage) CreateRepo(repoName string) (r []byte) {
 	return
 }
 
+// Get info of a repo.
 func (that *GhStorage) GetRepoInfo(repoName string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}
 	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/%s", GithubAPI, that.UserName, repoName))
@@ -73,6 +75,7 @@ func (that *GhStorage) GetRepoInfo(repoName string) (r []byte) {
 	return
 }
 
+// Get file list of a repo.
 func (that *GhStorage) GetContents(repoName, remotePath, fileName string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}/contents/
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fileName), "/")
@@ -86,7 +89,8 @@ func (that *GhStorage) GetContents(repoName, remotePath, fileName string) (r []b
 }
 
 /*
-SHA is needed for Update or Delete not Create.
+Upload/Update a file for a repo.
+SHA is needed for Update.
 */
 func (that *GhStorage) UploadFile(repoName, remotePath, localPath, shaStr string) (r []byte) {
 	if ok, _ := gutils.PathIsExist(localPath); !ok {
@@ -112,6 +116,7 @@ func (that *GhStorage) UploadFile(repoName, remotePath, localPath, shaStr string
 	return
 }
 
+// Get info for a file in a repo.
 func (that *GhStorage) GetFileInfo(repoName, remotePath, fileName string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}/contents/{path}/{filename}
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fileName), "/")
@@ -124,6 +129,10 @@ func (that *GhStorage) GetFileInfo(repoName, remotePath, fileName string) (r []b
 	return
 }
 
+/*
+Delete a file in a repo.
+SHA is needed for Delete.
+*/
 func (that *GhStorage) DeleteFile(repoName, remotePath, fileName, shaStr string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}/contents/{path}/{filename}
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fileName), "/")
