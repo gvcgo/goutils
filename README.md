@@ -14,6 +14,6 @@
 - 文件压缩为zip格式
 - zip, rar, 7z, tar.gz, xz等格式的文件解压
 - zip压缩，支持设置密码
-- git增强功能，支持设置代理(socks5/http)，支持的命令有clone/pull/push/commmit+push/tag+push/tag delete+push
+- github/gitee仓库 restful api封装
 - ctrl+C signal捕获
 - 快速排序通用版
