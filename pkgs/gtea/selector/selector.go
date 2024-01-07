@@ -2,8 +2,8 @@ package selector
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/gogf/gf/container/gtree"
-	gfutil "github.com/gogf/gf/util/gutil"
+	"github.com/gogf/gf/v2/container/gtree"
+	gfutil "github.com/gogf/gf/v2/util/gutil"
 	"github.com/moqsien/goutils/pkgs/gtea/program"
 )
 

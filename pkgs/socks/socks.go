@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gogf/gf/os/gfile"
+	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/moqsien/goktrl"
 )
 
@@ -33,7 +33,7 @@ func (that *USocket) SetSock(name string) {
 	if d := os.Getenv(goktrl.GoKtrlSockDirEnv); d != "" {
 		that.Path = filepath.Join(d, name)
 	} else {
-		that.Path = gfile.TempDir(name)
+		that.Path = gfile.Temp(name)
 	}
 }
 
