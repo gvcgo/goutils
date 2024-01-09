@@ -194,6 +194,6 @@ func main() {
 	// opt.Run()
 	// fmt.Println(opt.Value())
 
-	// storage.GhTest()
-	storage.GtTest()
+	storage.GhTest()
+	// storage.GtTest()
 }

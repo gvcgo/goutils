@@ -75,7 +75,7 @@ func (that *GhStorage) GetRepoInfo(repoName string) (r []byte) {
 	return
 }
 
-// Get file list of a repo.
+// Gets file list of a repo or info for a single file.
 func (that *GhStorage) GetContents(repoName, remotePath, fileName string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}/contents/
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fileName), "/")
@@ -162,10 +162,12 @@ func GhTest() {
 	// r := ghr.GetRepoInfo(repoName)
 	// r := ghr.UploadFile(repoName, "", localPath, "")
 	// r := ghr.GetFileInfo(repoName, "", localPath)
-	// r := ghr.GetContents(repoName, "", "")
-	r := ghr.GetFileInfo(repoName, "", "g_darwin-amd64.zip")
+	r := ghr.GetContents(repoName, "", "LICENSE")
+	// r := ghr.GetFileInfo(repoName, "", "LICENSE")
+	fmt.Println(string(r))
 	j := gjson.New(r)
 	shaStr := j.Get("sha").String()
-	r = ghr.DeleteFile(repoName, "", "g_darwin-amd64.zip", shaStr)
-	fmt.Println(string(r))
+	fmt.Println(shaStr)
+	// r = ghr.DeleteFile(repoName, "", "g_darwin-amd64.zip", shaStr)
+	// fmt.Println(string(r))
 }
