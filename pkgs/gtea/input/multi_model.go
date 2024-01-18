@@ -114,6 +114,12 @@ func MWithPrompt(prompt string) MOption {
 	}
 }
 
+func MWithDefaultValue(v string) MOption {
+	return func(ipt *textinput.Model) {
+		ipt.SetValue(v)
+	}
+}
+
 type InputMultiModel struct {
 	focusIndex         int
 	inputs             *InputList

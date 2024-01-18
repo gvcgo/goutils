@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
 	"github.com/moqsien/goutils/pkgs/request"
@@ -198,10 +197,10 @@ func GtTest() {
 	// r := gtr.PatchRepo(repoName)
 	// r := gtr.GetRepoInfo(repoName)
 	r := gtr.GetContents(repoName, "", "test2.txt")
-	j := gjson.New(r)
-	shaStr := j.Get("sha").String()
-	localPath := "/Volumes/data/projects/go/src/goutils/test2.txt"
-	r = gtr.UploadFile(repoName, "", localPath, shaStr)
+	// j := gjson.New(r)
+	// shaStr := j.Get("sha").String()
+	// localPath := "/Volumes/data/projects/go/src/goutils/test2.txt"
+	// r = gtr.UploadFile(repoName, "", localPath, shaStr)
 
 	// r = gtr.DeleteFile(repoName, "", "LICENSE", shaStr)
 	fmt.Println(string(r))

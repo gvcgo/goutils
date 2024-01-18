@@ -93,3 +93,7 @@ func (that *OptionModel) SetCursorMode(mode cursor.Mode) tea.Cmd {
 func (that *OptionModel) IsOption() bool {
 	return true
 }
+
+func (that *OptionModel) SetValue(v string) {
+	that.InputModel.textInput.SetValue(v)
+}
