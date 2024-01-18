@@ -118,9 +118,9 @@ func (that *GtStorage) UploadFile(repoName, remotePath, localPath, shaStr string
 
 	flagStr := `"download_url":`
 	if !strings.Contains(string(result), flagStr) {
-		that.CreateFile(repoName, remotePath, localPath)
+		r = that.CreateFile(repoName, remotePath, localPath)
 	} else {
-		that.UpdateFile(repoName, remotePath, localPath, shaStr)
+		r = that.UpdateFile(repoName, remotePath, localPath, shaStr)
 	}
 	return
 }
@@ -194,15 +194,17 @@ func GtTest() {
 	user := "moqsien"
 	repoName := "gvc_conf_test"
 	gtr := NewGtStorage(user, key)
-	// r := gtr.CreateRepo(repoName)
+	gtr.CreateRepo(repoName)
 	// r := gtr.PatchRepo(repoName)
 	// r := gtr.GetRepoInfo(repoName)
-	r := gtr.GetContents(repoName, "", "LICENSE")
+	r := gtr.GetContents(repoName, "", "test2.txt")
 	j := gjson.New(r)
 	shaStr := j.Get("sha").String()
-	// localPath := "/Volumes/data/projects/go/src/goutils/LICENSE"
-	// r := gtr.UploadFile(repoName, "", localPath, "")
+	localPath := "/Volumes/data/projects/go/src/goutils/test2.txt"
+	r = gtr.UploadFile(repoName, "", localPath, shaStr)
 
-	r = gtr.DeleteFile(repoName, "", "LICENSE", shaStr)
+	// r = gtr.DeleteFile(repoName, "", "LICENSE", shaStr)
 	fmt.Println(string(r))
+	// j := gjson.New(r)
+	// fmt.Println(j.Get("download_url").String())
 }

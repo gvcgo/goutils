@@ -13,7 +13,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gogf/gf/v2/os/gfile"
-	"github.com/moqsien/goktrl"
+)
+
+const (
+	GoKtrlSockDirEnv string = "GOKTRL_SOCK_DIR"
 )
 
 type USocket struct {
@@ -30,7 +33,7 @@ func (that *USocket) SetSock(name string) {
 	}
 	that.Name = name
 
-	if d := os.Getenv(goktrl.GoKtrlSockDirEnv); d != "" {
+	if d := os.Getenv(GoKtrlSockDirEnv); d != "" {
 		that.Path = filepath.Join(d, name)
 	} else {
 		that.Path = gfile.Temp(name)

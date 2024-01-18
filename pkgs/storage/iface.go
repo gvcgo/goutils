@@ -1,9 +1,9 @@
 package storage
 
 type IStorage interface {
-	CreateRepo(string) []byte
-	GetRepoInfo(string) []byte
-	GetContents(string, string, string) []byte
-	UploadFile(string, string, string, string) []byte
-	DeleteFile(string, string, string, string) []byte
+	CreateRepo(repoName string) []byte
+	GetRepoInfo(repoName string) []byte
+	GetContents(repoName, remotePath, fileName string) []byte
+	UploadFile(repoName, remotePath, localPath, shaStr string) []byte
+	DeleteFile(repoName, remotePath, fileName, shaStr string) []byte
 }

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gutils"
 	"github.com/moqsien/goutils/pkgs/request"
@@ -153,21 +152,21 @@ func GhTest() {
 	key := "xxx"
 	user := "moqsien"
 	proxyURI := "http://127.0.0.1:2023"
-	repoName := "gvc_conf_test"
+	repoName := "neobox_resources"
 	ghr := NewGhStorage(user, key)
 	ghr.Proxy = proxyURI
 
-	// localPath := "/Users/moqsien/data/projects/go/src/gvc/build/g_darwin-amd64.zip"
+	localPath := "/Volumes/data/projects/go/src/goutils/LICENSE"
 	// r := ghr.CreateRepo(repoName)
 	// r := ghr.GetRepoInfo(repoName)
-	// r := ghr.UploadFile(repoName, "", localPath, "")
+	r := ghr.UploadFile(repoName, "", localPath, "")
 	// r := ghr.GetFileInfo(repoName, "", localPath)
-	r := ghr.GetContents(repoName, "", "LICENSE")
+	// r := ghr.GetContents(repoName, "", "conf.txt")
 	// r := ghr.GetFileInfo(repoName, "", "LICENSE")
 	fmt.Println(string(r))
-	j := gjson.New(r)
-	shaStr := j.Get("sha").String()
-	fmt.Println(shaStr)
+	// j := gjson.New(r)
+	// shaStr := j.Get("sha").String()
+	// fmt.Println(shaStr)
 	// r = ghr.DeleteFile(repoName, "", "g_darwin-amd64.zip", shaStr)
 	// fmt.Println(string(r))
 }
