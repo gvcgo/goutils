@@ -116,7 +116,9 @@ func MWithPrompt(prompt string) MOption {
 
 func MWithDefaultValue(v string) MOption {
 	return func(ipt *textinput.Model) {
-		ipt.SetValue(v)
+		if v != "" {
+			ipt.SetValue(v)
+		}
 	}
 }
 
