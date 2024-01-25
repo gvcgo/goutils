@@ -195,8 +195,8 @@ func GtTest() {
 	gtr := NewGtStorage(user, key)
 	gtr.CreateRepo(repoName)
 	// r := gtr.PatchRepo(repoName)
-	// r := gtr.GetRepoInfo(repoName)
-	r := gtr.GetContents(repoName, "", "test2.txt")
+	r := gtr.GetRepoInfo(repoName)
+	// r := gtr.GetContents(repoName, "", "test2.txt")
 	// j := gjson.New(r)
 	// shaStr := j.Get("sha").String()
 	// localPath := "/Volumes/data/projects/go/src/goutils/test2.txt"

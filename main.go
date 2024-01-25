@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/gutils"
-	"github.com/moqsien/goutils/pkgs/storage"
 )
 
 type Comparable int
@@ -195,5 +199,17 @@ func main() {
 	// fmt.Println(opt.Value())
 
 	// storage.GhTest()
-	storage.GtTest()
+	// storage.GtTest()
+
+	homeDir, _ := os.UserHomeDir()
+	a, _ := archiver.NewArchiver(
+		filepath.Join(homeDir, "Downloads", "neovide.dmg"),
+		filepath.Join(homeDir, "Downloads", "neovide"),
+	)
+	dst, _ := a.UnArchive()
+
+	fPath := filepath.Join(dst, "Neovide.app", "Contents", "MacOS", "neovide")
+	if ok, _ := gutils.PathIsExist(fPath); ok {
+		fmt.Println(fPath)
+	}
 }

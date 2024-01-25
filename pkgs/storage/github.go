@@ -158,10 +158,10 @@ func GhTest() {
 
 	// localPath := "/Volumes/data/projects/go/src/goutils/LICENSE"
 	// r := ghr.CreateRepo(repoName)
-	// r := ghr.GetRepoInfo(repoName)
+	r := ghr.GetRepoInfo(repoName)
 	// r := ghr.UploadFile(repoName, "", localPath, "")
 	// r := ghr.GetFileInfo(repoName, "", localPath)
-	r := ghr.GetContents(repoName, "", "conf.txt")
+	// r := ghr.GetContents(repoName, "", "conf.txt")
 	// r := ghr.GetFileInfo(repoName, "", "LICENSE")
 	fmt.Println(string(r))
 	// j := gjson.New(r)

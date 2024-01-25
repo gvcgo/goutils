@@ -1,8 +1,10 @@
 package archiver
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	archive "github.com/mholt/archiver/v3"
@@ -38,6 +40,15 @@ func (that *Archiver) UnArchive() (string, error) {
 		err := XZDecompress(that.SrcFilePath, that.DstDir)
 		return that.DstDir, err
 	}
+
+	if strings.HasSuffix(that.SrcFilePath, ".dmg") {
+		if runtime.GOOS != gutils.Darwin {
+			return "", errors.New("support only macos")
+		}
+		err := ExtractDMG(that.SrcFilePath, that.DstDir)
+		return that.DstDir, err
+	}
+
 	if that.UseAchiver {
 		err := archive.Unarchive(that.SrcFilePath, that.DstDir)
 		return that.DstDir, err
