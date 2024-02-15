@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 )
 
 type ConfirmModel struct {

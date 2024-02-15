@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/go-git/go-git/v5/plumbing/transport"
-	"github.com/moqsien/goutils/pkgs/ggit/gcommon"
+	"github.com/gvcgo/goutils/pkgs/ggit/gcommon"
 	"github.com/skeema/knownhosts"
 
 	"github.com/kevinburke/ssh_config"

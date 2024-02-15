@@ -20,7 +20,7 @@ import (
 	"strings"
 
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 )
 
 func PathIsExist(path string) (bool, error) {

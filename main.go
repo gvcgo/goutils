@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moqsien/goutils/pkgs/archiver"
-	"github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/gvcgo/goutils/pkgs/archiver"
+	"github.com/gvcgo/goutils/pkgs/gutils"
 )
 
 type Comparable int

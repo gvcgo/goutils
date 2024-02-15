@@ -3,7 +3,7 @@ package gtable
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/moqsien/goutils/pkgs/gtea/program"
+	"github.com/gvcgo/goutils/pkgs/gtea/program"
 )
 
 type Table struct {

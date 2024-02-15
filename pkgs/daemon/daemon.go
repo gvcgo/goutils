@@ -8,8 +8,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	utils "github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	utils "github.com/gvcgo/goutils/pkgs/gutils"
 )
 
 const (

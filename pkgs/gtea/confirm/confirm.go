@@ -2,7 +2,7 @@ package confirm
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/moqsien/goutils/pkgs/gtea/program"
+	"github.com/gvcgo/goutils/pkgs/gtea/program"
 )
 
 type COption func(confirm *Confirm)

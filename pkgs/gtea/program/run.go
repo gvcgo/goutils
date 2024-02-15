@@ -2,7 +2,7 @@ package program
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 )
 
 func Run(app *tea.Program) {

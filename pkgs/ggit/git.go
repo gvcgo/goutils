@@ -15,10 +15,10 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/client"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
-	"github.com/moqsien/goutils/pkgs/ggit/ghttp"
-	"github.com/moqsien/goutils/pkgs/ggit/gssh"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/gvcgo/goutils/pkgs/ggit/ghttp"
+	"github.com/gvcgo/goutils/pkgs/ggit/gssh"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gutils"
 )
 
 type Git struct {

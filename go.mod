@@ -1,4 +1,4 @@
-module github.com/moqsien/goutils
+module github.com/gvcgo/goutils
 
 go 1.20
 
@@ -13,12 +13,12 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf/v2 v2.6.1
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
+	github.com/gvcgo/xtractr v0.0.3
 	github.com/kevinburke/ssh_config v1.2.0
 	github.com/knadh/koanf v1.5.0
 	github.com/lucasb-eyer/go-colorful v1.2.0
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/mholt/archiver/v3 v3.5.1
-	github.com/moqsien/xtractr v0.0.2
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.15.2

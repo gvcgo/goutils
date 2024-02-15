@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 )
 
 type Crypt struct {

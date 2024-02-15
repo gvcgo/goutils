@@ -15,10 +15,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-resty/resty/v2"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/moqsien/goutils/pkgs/archiver"
-	"github.com/moqsien/goutils/pkgs/gtea/bar"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	utils "github.com/moqsien/goutils/pkgs/gutils"
+	"github.com/gvcgo/goutils/pkgs/archiver"
+	"github.com/gvcgo/goutils/pkgs/gtea/bar"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	utils "github.com/gvcgo/goutils/pkgs/gutils"
 	nproxy "golang.org/x/net/proxy"
 )
 

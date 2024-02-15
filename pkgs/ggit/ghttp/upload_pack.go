@@ -12,7 +12,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/protocol/packp"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/utils/ioutil"
-	"github.com/moqsien/goutils/pkgs/ggit/gcommon"
+	"github.com/gvcgo/goutils/pkgs/ggit/gcommon"
 )
 
 type upSession struct {

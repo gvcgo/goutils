@@ -7,10 +7,10 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/gvcgo/xtractr"
 	archive "github.com/mholt/archiver/v3"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gutils"
-	"github.com/moqsien/xtractr"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gutils"
 )
 
 type Archiver struct {
