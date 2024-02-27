@@ -144,6 +144,7 @@ func NewSelectorModel(items []Item, opts ...SOption) (sm *SelectorModel) {
 		chosen: &map[Item]struct{}{},
 	}
 	l := list.New(itemList, delegate, DefaultWidth, DefaultHeight)
+	l.SetShowHelp(false)
 	sm = &SelectorModel{
 		list:      &l,
 		delegate:  delegate,
@@ -175,7 +176,7 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			that.quitting = true
 			os.Exit(1)
-		case "esc", "tab":
+		case "tab", "esc":
 			cmd := that.submitCmd
 			if len(*that.delegate.chosen) == 0 {
 				cmd = nil
@@ -210,10 +211,27 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return that, cmd
 }
 
-var helpStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#626262")).Render
+var helpStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#FFA500")).Render
 
 func (that *SelectorModel) View() string {
-	return lipgloss.JoinVertical(lipgloss.Left, that.list.View(), helpStyle(`Press Tab/Esc to confirm selections.`))
+	var r string
+	if that.multi {
+		r = lipgloss.JoinVertical(
+			lipgloss.Left,
+			that.list.View(),
+			helpStyle("↑/k up • ↓/j down • / filter • q quit • ? more"),
+			helpStyle("Press Enter to select one item."),
+			helpStyle(`Press Tab/Esc to confirm selections.`),
+		)
+	} else {
+		r = lipgloss.JoinVertical(
+			lipgloss.Left,
+			that.list.View(),
+			helpStyle("↑/k up • ↓/j down • / filter • q quit • ? more"),
+			helpStyle(`Press Enter to select one item.`),
+		)
+	}
+	return r
 }
 
 func (that *SelectorModel) ChosenList() (r []string) {

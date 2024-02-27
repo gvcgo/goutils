@@ -59,7 +59,7 @@ func WithPrompt(prompt string) TOption {
 }
 
 var (
-	helpStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
+	helpStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500")).Render
 	focusStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 )
 

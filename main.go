@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/gvcgo/goutils/pkgs/gtea/input"
 	"github.com/gvcgo/goutils/pkgs/gutils"
-	"github.com/gvcgo/goutils/pkgs/storage"
 )
 
 type Comparable int
@@ -100,16 +103,22 @@ func main() {
 	// fcolor := gprint.NewFadeColors(content)
 	// fcolor.Println()
 
-	// ipt := input.NewInput(input.WithEchoMode(textinput.EchoPassword), input.WithEchoChar("*"), input.WithPlaceholder("password"))
-	// ipt.Run()
-	// fmt.Println(ipt.Value())
+	ipt := input.NewInput(input.WithEchoMode(textinput.EchoPassword), input.WithEchoChar("*"), input.WithPlaceholder("password"))
+	ipt.Run()
+	fmt.Println(ipt.Value())
 
 	// itemList := selector.NewItemList()
 	// itemList.Add("win", "windows")
 	// itemList.Add("linux", "linux")
 	// itemList.Add("mac", "darwin")
 	// // sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(true))
-	// sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true))
+	// sel := selector.NewSelector(
+	// 	itemList,
+	// 	selector.WidthEnableMulti(true),
+	// 	selector.WithShowStatusBar(true),
+	// 	selector.WithTitle("Choose OS type:"),
+	// 	selector.WithEnbleInfinite(true),
+	// )
 	// sel.Run()
 	// fmt.Println(sel.Value())
 
@@ -194,7 +203,7 @@ func main() {
 	// opt.Run()
 	// fmt.Println(opt.Value())
 
-	storage.GhTest()
+	// storage.GhTest()
 	// storage.GtTest()
 
 	// homeDir, _ := os.UserHomeDir()
