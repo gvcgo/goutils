@@ -47,6 +47,14 @@ func (that *GhStorage) initiate() {
 	}
 }
 
+func (that *GhStorage) formatRepoName(repoName string) string {
+	repoName = strings.Trim(repoName, "/")
+	if strings.Contains(repoName, "/") {
+		return repoName
+	}
+	return fmt.Sprintf("%s/%s", that.UserName, repoName)
+}
+
 // Create a repo.
 func (that *GhStorage) CreateRepo(repoName string) (r []byte) {
 	// https://api.github.com/user/repos
@@ -65,7 +73,7 @@ func (that *GhStorage) CreateRepo(repoName string) (r []byte) {
 // Get info of a repo.
 func (that *GhStorage) GetRepoInfo(repoName string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}
-	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/%s", GithubAPI, that.UserName, repoName))
+	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s", GithubAPI, that.formatRepoName(repoName)))
 	that.fetcher.Timeout = 60 * time.Second
 	if resp := that.fetcher.Get(); resp != nil {
 		defer resp.RawResponse.Body.Close()
@@ -78,7 +86,7 @@ func (that *GhStorage) GetRepoInfo(repoName string) (r []byte) {
 func (that *GhStorage) GetContents(repoName, remotePath, fileName string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}/contents/
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fileName), "/")
-	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/%s/contents/%s", GithubAPI, that.UserName, repoName, remotePath))
+	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/contents/%s", GithubAPI, that.formatRepoName(repoName), remotePath))
 	that.fetcher.Timeout = 60 * time.Second
 	if resp := that.fetcher.Get(); resp != nil {
 		defer resp.RawResponse.Body.Close()
@@ -99,7 +107,7 @@ func (that *GhStorage) UploadFile(repoName, remotePath, localPath, shaStr string
 	// https://api.github.com/repos/{user}/{repo}/contents/{path}/{filename}
 	fName := filepath.Base(localPath)
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fName), "/")
-	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/%s/contents/%s", GithubAPI, that.UserName, repoName, remotePath))
+	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/contents/%s", GithubAPI, that.formatRepoName(repoName), remotePath))
 	that.fetcher.Timeout = 30 * time.Minute
 
 	content, _ := os.ReadFile(localPath)
@@ -119,7 +127,7 @@ func (that *GhStorage) UploadFile(repoName, remotePath, localPath, shaStr string
 func (that *GhStorage) GetFileInfo(repoName, remotePath, fileName string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}/contents/{path}/{filename}
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fileName), "/")
-	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/%s/contents/%s", GithubAPI, that.UserName, repoName, remotePath))
+	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/contents/%s", GithubAPI, that.formatRepoName(repoName), remotePath))
 	that.fetcher.Timeout = 30 * time.Minute
 	if resp := that.fetcher.Get(); resp != nil {
 		defer resp.RawResponse.Body.Close()
@@ -135,13 +143,27 @@ SHA is needed for Delete.
 func (that *GhStorage) DeleteFile(repoName, remotePath, fileName, shaStr string) (r []byte) {
 	// https://api.github.com/repos/{user}/{repo}/contents/{path}/{filename}
 	remotePath = strings.TrimLeft(filepath.Join(remotePath, fileName), "/")
-	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/%s/contents/%s", GithubAPI, that.UserName, repoName, remotePath))
+	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/contents/%s", GithubAPI, that.formatRepoName(repoName), remotePath))
 	that.fetcher.Timeout = 30 * time.Minute
 	that.fetcher.PostBody = map[string]interface{}{
 		"message": fmt.Sprintf("delete file: %s.", fileName),
 		"sha":     shaStr,
 	}
 	if resp := that.fetcher.Delete(); resp != nil {
+		defer resp.RawResponse.Body.Close()
+		r, _ = io.ReadAll(resp.RawResponse.Body)
+	}
+	return
+}
+
+/*
+Get releases list.
+*/
+func (that *GhStorage) GetReleaseList(repoName string) (r []byte) {
+	// https://api.github.com/repos/{owner}/{repo}/releases
+	that.fetcher.SetUrl(fmt.Sprintf("%s/repos/%s/releases", GithubAPI, that.formatRepoName(repoName)))
+	that.fetcher.Timeout = 180 * time.Second
+	if resp := that.fetcher.Get(); resp != nil {
 		defer resp.RawResponse.Body.Close()
 		r, _ = io.ReadAll(resp.RawResponse.Body)
 	}
@@ -169,4 +191,6 @@ func GhTest() {
 	// fmt.Println(shaStr)
 	// r = ghr.DeleteFile(repoName, "", "g_darwin-amd64.zip", shaStr)
 	// fmt.Println(string(r))
+	r = ghr.GetReleaseList("gvcgo/gvc")
+	os.WriteFile("result.json", r, os.ModePerm)
 }
