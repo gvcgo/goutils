@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	"github.com/gvcgo/goutils/pkgs/gtea/input"
 	"github.com/gvcgo/goutils/pkgs/gutils"
 )
 
@@ -103,9 +101,9 @@ func main() {
 	// fcolor := gprint.NewFadeColors(content)
 	// fcolor.Println()
 
-	ipt := input.NewInput(input.WithEchoMode(textinput.EchoPassword), input.WithEchoChar("*"), input.WithPlaceholder("password"))
-	ipt.Run()
-	fmt.Println(ipt.Value())
+	// ipt := input.NewInput(input.WithEchoMode(textinput.EchoPassword), input.WithEchoChar("*"), input.WithPlaceholder("password"))
+	// ipt.Run()
+	// fmt.Println(ipt.Value())
 
 	// itemList := selector.NewItemList()
 	// itemList.Add("win", "windows")
@@ -217,4 +215,8 @@ func main() {
 	// if ok, _ := gutils.PathIsExist(fPath); ok {
 	// 	fmt.Println(fPath)
 	// }
+	src := `xxxxx`
+	dst := `/yyyyy`
+	err := gutils.CopyDirectory(src, dst, true)
+	fmt.Println(err)
 }
