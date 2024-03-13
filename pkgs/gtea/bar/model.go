@@ -268,6 +268,9 @@ func (m *Model) SetSpringOptions(frequency, damping float64) {
 }
 
 func (m *Model) SetTitle(title string) {
+	if len(title) > 28 {
+		title = title[:25] + "..."
+	}
 	m.tileShown = title
 }
 
