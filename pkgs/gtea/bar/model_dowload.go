@@ -1,7 +1,6 @@
 package bar
 
 import (
-	"os"
 	"strings"
 	"time"
 
@@ -47,7 +46,7 @@ func (dm *DownloadModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if dm.sweep != nil {
 				dm.sweep()
 			}
-			os.Exit(1)
+			return dm, tea.Quit
 		}
 		return dm, nil
 	case tea.WindowSizeMsg:

@@ -3,7 +3,6 @@ package selector
 import (
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -175,7 +174,7 @@ func (that *SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch keypress := msg.String(); keypress {
 		case "ctrl+c", "q":
 			that.quitting = true
-			os.Exit(1)
+			return that, tea.Quit
 		case "tab", "esc":
 			cmd := that.submitCmd
 			if len(*that.delegate.chosen) == 0 {
