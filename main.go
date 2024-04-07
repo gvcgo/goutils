@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/gtea/gtable"
 	"github.com/gvcgo/goutils/pkgs/gutils"
 )
@@ -136,7 +137,7 @@ func main() {
 	}
 
 	rows := []gtable.Row{
-		{"1", "Tokyo", "Japan", "37,274,000"},
+		{gprint.CyanStr("1"), "Tokyo", "Japan", "37,274,000"},
 		{"2", "Delhi", "India", "32,065,760"},
 		{"3", "Shanghai", "China", "28,516,904"},
 		{"4", "Dhaka", "Bangladesh", "22,478,116"},

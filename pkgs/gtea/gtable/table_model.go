@@ -31,9 +31,7 @@ func (that *TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "enter", "ctrl+c":
 			row := that.table.SelectedRow()
 			if len(row) > 0 {
-				txtStyle := lipgloss.NewStyle()
-				r := txtStyle.SetString(row[0]).UnsetForeground().Render()
-				if err := clipboard.WriteAll(r); err == nil {
+				if err := clipboard.WriteAll(row[0]); err == nil {
 					gprint.PrintInfo("%s is copied to clipboard.", row[0])
 				}
 			}
