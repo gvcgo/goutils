@@ -12,7 +12,8 @@ var baseStyle = lipgloss.NewStyle().
 	BorderForeground(lipgloss.Color("240"))
 
 type TableModel struct {
-	table *Model
+	table  *Model
+	toCopy bool
 }
 
 func (that *TableModel) Init() tea.Cmd { return nil }
@@ -29,10 +30,12 @@ func (that *TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				that.table.Focus()
 			}
 		case "q", "enter", "ctrl+c":
-			row := that.table.SelectedRow()
-			if len(row) > 0 {
-				if err := clipboard.WriteAll(row[0]); err == nil {
-					gprint.PrintInfo("%s is copied to clipboard.", row[0])
+			if that.toCopy {
+				row := that.table.SelectedRow()
+				if len(row) > 0 {
+					if err := clipboard.WriteAll(row[0]); err == nil {
+						gprint.PrintInfo("%s is copied to clipboard.", row[0])
+					}
 				}
 			}
 			return that, tea.Quit
@@ -52,4 +55,8 @@ func (that *TableModel) View() string {
 	helpStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#FFA500"))
 	helpStr := `Press "↑/k" to move up, "↓/j" to move down, "q" to quit.`
 	return baseStyle.Render(that.table.View()) + "\n" + helpStyle.Render(helpStr) + "\n"
+}
+
+func (that *TableModel) SetCopyToClipBoard(toCopy bool) {
+	that.toCopy = toCopy
 }

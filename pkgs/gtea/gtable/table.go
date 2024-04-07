@@ -41,6 +41,10 @@ func (that *Table) SetProgramOpts(opts ...tea.ProgramOption) {
 	}
 }
 
+func (that *Table) CopySelectedRow(toCopy bool) {
+	that.model.SetCopyToClipBoard(toCopy)
+}
+
 func (that *Table) Run() {
 	program.Run(that.Program)
 }
