@@ -4,7 +4,6 @@ import (
 	"github.com/atotto/clipboard"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 )
 
 var baseStyle = lipgloss.NewStyle().
@@ -33,9 +32,10 @@ func (that *TableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if that.toCopy {
 				row := that.table.SelectedRow()
 				if len(row) > 0 {
-					if err := clipboard.WriteAll(row[0]); err == nil {
-						gprint.PrintInfo("%s is copied to clipboard.", row[0])
-					}
+					clipboard.WriteAll(row[0])
+					// if err := clipboard.WriteAll(row[0]); err == nil {
+					// 	gprint.PrintInfo("%s is copied to clipboard.", row[0])
+					// }
 				}
 			}
 			return that, tea.Quit
