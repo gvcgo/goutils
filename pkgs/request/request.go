@@ -18,6 +18,7 @@ import (
 	"github.com/gvcgo/goutils/pkgs/archiver"
 	"github.com/gvcgo/goutils/pkgs/gtea/bar"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/spinner"
 	utils "github.com/gvcgo/goutils/pkgs/gutils"
 	nproxy "golang.org/x/net/proxy"
 )
@@ -42,6 +43,7 @@ type Fetcher struct {
 	checkSumType   string
 	lock           *sync.Mutex
 	dbar           *bar.DownloadBar
+	dspinner       *spinner.Spinner
 	programOpts    []tea.ProgramOption
 	fileContentLen int64
 }
@@ -191,9 +193,16 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 	if forceToDownload {
 		os.RemoveAll(localPath)
 	}
+	if that.dspinner == nil {
+		that.dspinner = spinner.NewSpinner()
+	}
+
+	that.dspinner.SetTitle(fmt.Sprintf("Downloading %s", that.parseFilename(localPath)))
+	go that.dspinner.Run()
 	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(localPath)
 		if err != nil {
+			that.dspinner.Quit()
 			gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 			return
 		}
@@ -201,13 +210,17 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 		defer utils.Closeq(res.RawResponse.Body)
 		written, err := io.Copy(outFile, res.RawResponse.Body)
 		if err != nil {
+			that.dspinner.Quit()
 			fmt.Println(err)
 			return
 		}
 		size = written
 	} else {
+		that.dspinner.Quit()
 		fmt.Println(err)
+		return
 	}
+	that.dspinner.Quit()
 	return
 }
 

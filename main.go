@@ -1,9 +1,8 @@
 package main
 
 import (
-	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
-	"github.com/gvcgo/goutils/pkgs/gtea/gtable"
 	"github.com/gvcgo/goutils/pkgs/gutils"
+	"github.com/gvcgo/goutils/pkgs/request"
 )
 
 type Comparable int
@@ -22,8 +21,9 @@ func main() {
 	// 	// fmt.Println(err)
 	// }
 
-	// f := request.NewFetcher()
-	// f.SetUrl("https://golang.google.cn/dl/go1.21.0.linux-amd64.tar.gz")
+	f := request.NewFetcher()
+	f.SetUrl("https://golang.google.cn/dl/go1.21.0.linux-amd64.tar.gz")
+	f.GetFile("/Volumes/data/projects/go/src/gvcgo_org/goutils/go1.21.0.linux-amd64.tar.gz", true)
 	// f.SetUrl("https://mirrors.aliyun.com/golang/go1.21.0.linux-amd64.tar.gz?spm=a2c6h.25603864.0.0.33337c45JOHx3F")
 	// f.SetUrl("https://mirrors.nju.edu.cn/golang/go1.21.0.linux-amd64.tar.gz")
 	// f.SetUrl("https://mirrors.ustc.edu.cn/golang/go1.21.0.linux-amd64.tar.gz")
@@ -129,24 +129,24 @@ func main() {
 	// )
 	// gprint.PrintlnByDefault(s)
 
-	columns := []gtable.Column{
-		{Title: "Rank", Width: 10},
-		{Title: "City", Width: 20},
-		{Title: "Country", Width: 20},
-		{Title: "Population", Width: 50},
-	}
+	// columns := []gtable.Column{
+	// 	{Title: "Rank", Width: 10},
+	// 	{Title: "City", Width: 20},
+	// 	{Title: "Country", Width: 20},
+	// 	{Title: "Population", Width: 50},
+	// }
 
-	rows := []gtable.Row{
-		{gprint.CyanStr("1"), "Tokyo", "Japan", "37,274,000"},
-		{"2", "Delhi", "India", "32,065,760"},
-		{"3", "Shanghai", "China", "28,516,904"},
-		{"4", "Dhaka", "Bangladesh", "22,478,116"},
-		{"5", "São Paulo", "Brazil", "22,429,800"},
-		{"6", "Mexico City", "Mexico", "22,085,140"},
-	}
+	// rows := []gtable.Row{
+	// 	{gprint.CyanStr("1"), "Tokyo", "Japan", "37,274,000"},
+	// 	{"2", "Delhi", "India", "32,065,760"},
+	// 	{"3", "Shanghai", "China", "28,516,904"},
+	// 	{"4", "Dhaka", "Bangladesh", "22,478,116"},
+	// 	{"5", "São Paulo", "Brazil", "22,429,800"},
+	// 	{"6", "Mexico City", "Mexico", "22,085,140"},
+	// }
 
-	t := gtable.NewTable(gtable.WithColumns(columns), gtable.WithRows(rows), gtable.WithHeight(7), gtable.WithFocused(true))
-	t.Run()
+	// t := gtable.NewTable(gtable.WithColumns(columns), gtable.WithRows(rows), gtable.WithHeight(7), gtable.WithFocused(true))
+	// t.Run()
 
 	// style := lipgloss.NewStyle().Width(20).MaxWidth(20).Inline(true)
 	// renderedCell := style.Render(runewidth.Truncate("hello test", 20, "*"))
