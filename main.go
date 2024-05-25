@@ -24,6 +24,19 @@ func main() {
 	f := request.NewFetcher()
 	f.SetUrl("https://golang.google.cn/dl/go1.21.0.linux-amd64.tar.gz")
 	f.GetFile("/Volumes/data/projects/go/src/gvcgo_org/goutils/go1.21.0.linux-amd64.tar.gz", true)
+
+	// f.GetAndSaveFile("/Volumes/data/projects/go/src/gvcgo_org/goutils/go1.21.0.linux-amd64.tar.gz", true)
+
+	// cc := make(chan struct{})
+	// s := spinner.NewSpinner()
+	// s.SetTitle("test")
+	// go s.Run()
+	// go func() {
+	// 	time.Sleep(5 * time.Second)
+	// 	cc <- struct{}{}
+	// }()
+	// <-cc
+
 	// f.SetUrl("https://mirrors.aliyun.com/golang/go1.21.0.linux-amd64.tar.gz?spm=a2c6h.25603864.0.0.33337c45JOHx3F")
 	// f.SetUrl("https://mirrors.nju.edu.cn/golang/go1.21.0.linux-amd64.tar.gz")
 	// f.SetUrl("https://mirrors.ustc.edu.cn/golang/go1.21.0.linux-amd64.tar.gz")

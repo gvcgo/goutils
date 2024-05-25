@@ -221,6 +221,13 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 		return
 	}
 	that.dspinner.Quit()
+
+	// wait for progress bar to complete.
+	toSleep := gconv.Int(os.Getenv(WaitBarCompleteEnv))
+	if toSleep <= 0 {
+		toSleep = 2
+	}
+	time.Sleep(time.Duration(toSleep) * time.Second)
 	return
 }
 
@@ -295,7 +302,7 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 		if res.RawResponse.StatusCode != 200 && written < int64(range_end-range_begin) {
 			gprint.PrintFatal(fmt.Sprintf("Download failed, status code: %d", res.RawResponse.StatusCode))
 			gprint.PrintWarning(fmt.Sprintf("Please remove temp files manually: %s.", that.getPartDir(localPath)))
-			os.Exit(1)
+			return
 		}
 	} else {
 		gprint.PrintError("%+v", err)

@@ -25,6 +25,10 @@ func NewSpinner() *Spinner {
 	return &Spinner{spinner: s}
 }
 
+func (m *Spinner) SetSpiiner(ss spinner.Spinner) {
+	m.spinner.Spinner = ss
+}
+
 func (m *Spinner) SetFileName(fName string) {
 	m.fileName = fName
 }
@@ -55,11 +59,11 @@ func (m *Spinner) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.err = msg
 		return m, nil
 	default:
-		if m.quitting {
-			return m, tea.Quit
-		}
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(msg)
+		if m.quitting {
+			cmd = tea.Batch(cmd, tea.Quit)
+		}
 		return m, cmd
 	}
 }
@@ -70,9 +74,9 @@ func (m *Spinner) View() string {
 	}
 	var str string
 	if m.title == "" && m.fileName != "" {
-		str = fmt.Sprintf("\n\n %s Downloading %s...\n\n", m.spinner.View(), m.fileName)
+		str = fmt.Sprintf("\n\n %s - Downloading %s...\n\n", m.spinner.View(), m.fileName)
 	} else {
-		str = fmt.Sprintf("\n\n %s %s...\n\n", m.spinner.View(), m.title)
+		str = fmt.Sprintf("\n\n %s - %s...\n\n", m.spinner.View(), m.title)
 	}
 
 	if m.quitting {
