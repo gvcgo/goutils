@@ -27,22 +27,23 @@ const (
 )
 
 type Fetcher struct {
-	Url          string
-	PostBody     map[string]interface{}
-	Timeout      time.Duration
-	RetryTimes   int
-	Headers      map[string]string
-	Proxy        string
-	NoRedirect   bool
-	client       *resty.Client
-	proxyEnvName string
-	threadNum    int
-	size         int64
-	checkSum     string
-	checkSumType string
-	lock         *sync.Mutex
-	dbar         *bar.DownloadBar
-	programOpts  []tea.ProgramOption
+	Url            string
+	PostBody       map[string]interface{}
+	Timeout        time.Duration
+	RetryTimes     int
+	Headers        map[string]string
+	Proxy          string
+	NoRedirect     bool
+	client         *resty.Client
+	proxyEnvName   string
+	threadNum      int
+	size           int64
+	checkSum       string
+	checkSumType   string
+	lock           *sync.Mutex
+	dbar           *bar.DownloadBar
+	programOpts    []tea.ProgramOption
+	fileContentLen int64
 }
 
 func NewFetcher() *Fetcher {
@@ -92,6 +93,10 @@ func (that *Fetcher) SetUrl(url string) {
 func (that *Fetcher) SetCheckSum(checkSum, checkSumType string) {
 	that.checkSum = checkSum
 	that.checkSumType = checkSumType
+}
+
+func (that *Fetcher) SetFileContentLength(length int64) {
+	that.fileContentLen = length
 }
 
 func (that *Fetcher) setProxy() {
@@ -233,7 +238,7 @@ func (that *Fetcher) getPartDir(localPath string) string {
 }
 
 func (that *Fetcher) mergeFile(localPath string) error {
-	dest_file, err := os.OpenFile(localPath, os.O_CREATE|os.O_WRONLY, 0666)
+	dest_file, err := os.OpenFile(localPath, os.O_CREATE|os.O_WRONLY, 0o666)
 	if err != nil {
 		return err
 	}
@@ -288,7 +293,7 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 	part_size := content_size / that.threadNum
 
 	part_dir := that.getPartDir(localPath)
-	os.Mkdir(part_dir, 0777)
+	os.Mkdir(part_dir, 0o777)
 	defer os.RemoveAll(part_dir)
 
 	var waitgroup sync.WaitGroup
@@ -337,25 +342,29 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	if forceToDownload {
 		os.RemoveAll(localPath)
 	}
-	var content_length int64
-	if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
-		content_length = res.RawResponse.ContentLength
-		if content_length <= 0 {
-			gprint.PrintWarning("Content-Length is invalid.")
-			return that.GetFile(localPath, force...)
+	content_length := that.fileContentLen
+
+	if content_length <= 0 {
+		if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
+			content_length = res.RawResponse.ContentLength
+		} else {
+			gprint.PrintError("%+v", err)
+			return
 		}
-		that.dbar = bar.NewDownloadBar(bar.WithTitle(that.parseFilename(localPath)), bar.WithDefaultGradient(), bar.WithWidth(30))
-		if len(that.programOpts) > 0 {
-			that.dbar.SetProgramOpts(that.programOpts...)
-		}
-		that.dbar.SetTotal(content_length)
-		that.dbar.SetSweep(func() {
-			os.RemoveAll(localPath)
-		})
-	} else {
-		gprint.PrintError("%+v", err)
-		return
 	}
+
+	if content_length <= 0 {
+		gprint.PrintWarning("Content-Length is invalid.")
+		return that.GetFile(localPath, force...)
+	}
+	that.dbar = bar.NewDownloadBar(bar.WithTitle(that.parseFilename(localPath)), bar.WithDefaultGradient(), bar.WithWidth(30))
+	if len(that.programOpts) > 0 {
+		that.dbar.SetProgramOpts(that.programOpts...)
+	}
+	that.dbar.SetTotal(content_length)
+	that.dbar.SetSweep(func() {
+		os.RemoveAll(localPath)
+	})
 
 	go that.dbar.Run()
 
