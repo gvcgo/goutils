@@ -366,7 +366,9 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 
 	if content_length <= 0 {
 		if res, err := that.client.R().SetDoNotParseResponse(true).Head(that.Url); err == nil {
-			content_length = res.RawResponse.ContentLength
+			if res.RawResponse.StatusCode == 200 {
+				content_length = res.RawResponse.ContentLength
+			}
 		} else {
 			gprint.PrintError("%+v", err)
 			return
@@ -374,7 +376,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	}
 
 	if content_length <= 0 {
-		gprint.PrintWarning("Content-Length is invalid.")
+		gprint.PrintWarning("Content-Length is not supported.")
 		return that.GetFile(localPath, force...)
 	}
 	that.dbar = bar.NewDownloadBar(bar.WithTitle(that.parseFilename(localPath)), bar.WithDefaultGradient(), bar.WithWidth(30))

@@ -22,8 +22,11 @@ func main() {
 	// }
 
 	f := request.NewFetcher()
-	f.SetUrl("https://golang.google.cn/dl/go1.21.0.linux-amd64.tar.gz")
-	f.GetFile("/Volumes/data/projects/go/src/gvcgo_org/goutils/go1.21.0.linux-amd64.tar.gz", true)
+	f.SetUrl("https://downloads.dlang.org/releases/2.x/2.065.0/dmd.2.065.0.osx.zip")
+	f.GetAndSaveFile("/home/moqsien/golang/src/gvcgo/goutils/dmd.2.065.0.osx.zip", true)
+
+	// f.SetUrl("https://golang.google.cn/dl/go1.22.3.linux-amd64.tar.gz")
+	// f.GetAndSaveFile("/home/moqsien/golang/src/gvcgo/goutils/go1.22.3.linux-amd64.tar.gz", true)
 
 	// f.GetAndSaveFile("/Volumes/data/projects/go/src/gvcgo_org/goutils/go1.21.0.linux-amd64.tar.gz", true)
 
