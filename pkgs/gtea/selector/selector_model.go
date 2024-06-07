@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 )
 
 type Item string
@@ -43,7 +44,7 @@ func (d ItemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 
 	str := fmt.Sprintf("%d. %s", index+1, i)
 
-	hintStr := "✔ "
+	hintStr := gprint.GreenStr("√ ")
 	if _, exists := (*d.chosen)[i]; !exists {
 		hintStr = "> "
 	}
@@ -220,7 +221,7 @@ func (that *SelectorModel) View() string {
 			that.list.View(),
 			helpStyle("↑/k up • ↓/j down • / filter • q quit • ? more"),
 			helpStyle("Press Enter to select one item."),
-			helpStyle(`Press Tab/Esc to confirm selections.`),
+			helpStyle(`Press Tab/Esc to confirm your selections.`),
 		)
 	} else {
 		r = lipgloss.JoinVertical(

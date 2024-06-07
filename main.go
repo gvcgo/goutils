@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/gvcgo/goutils/pkgs/gtea/confirm"
+	"github.com/gvcgo/goutils/pkgs/gtea/selector"
 	"github.com/gvcgo/goutils/pkgs/gutils"
 )
 
@@ -27,10 +27,10 @@ func main() {
 	// f.SetUrl("https://downloads.dlang.org/releases/2.x/2.065.0/dmd.2.065.0.osx.zip")
 	// f.GetAndSaveFile("/home/moqsien/golang/src/gvcgo/goutils/dmd.2.065.0.osx.zip", true)
 
-	cfm := confirm.NewConfirmation(confirm.WithPrompt("To continue or not?"))
-	cfm.Run()
-	ok := cfm.Result()
-	fmt.Println(ok)
+	// cfm := confirm.NewConfirmation(confirm.WithPrompt("To continue or not?"))
+	// cfm.Run()
+	// ok := cfm.Result()
+	// fmt.Println(ok)
 
 	// f.SetUrl("https://golang.google.cn/dl/go1.22.3.linux-amd64.tar.gz")
 	// f.GetAndSaveFile("/home/moqsien/golang/src/gvcgo/goutils/go1.22.3.linux-amd64.tar.gz", true)
@@ -128,20 +128,20 @@ func main() {
 	// ipt.Run()
 	// fmt.Println(ipt.Value())
 
-	// itemList := selector.NewItemList()
-	// itemList.Add("win", "windows")
-	// itemList.Add("linux", "linux")
-	// itemList.Add("mac", "darwin")
-	// // sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(true))
-	// sel := selector.NewSelector(
-	// 	itemList,
-	// 	selector.WidthEnableMulti(true),
-	// 	selector.WithShowStatusBar(true),
-	// 	selector.WithTitle("Choose OS type:"),
-	// 	selector.WithEnbleInfinite(true),
-	// )
-	// sel.Run()
-	// fmt.Println(sel.Value())
+	itemList := selector.NewItemList()
+	itemList.Add("win", "windows")
+	itemList.Add("linux", "linux")
+	itemList.Add("mac", "darwin")
+	// sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(true))
+	sel := selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(true),
+		selector.WithShowStatusBar(true),
+		selector.WithTitle("Choose OS type:"),
+		selector.WithEnbleInfinite(true),
+	)
+	sel.Run()
+	fmt.Println(sel.Value())
 
 	// s := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
 	// 	"Name: gvc",
