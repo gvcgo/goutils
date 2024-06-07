@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/gvcgo/goutils/pkgs/gtea/confirm"
 	"github.com/gvcgo/goutils/pkgs/gutils"
-	"github.com/gvcgo/goutils/pkgs/request"
 )
 
 type Comparable int
@@ -21,9 +23,14 @@ func main() {
 	// 	// fmt.Println(err)
 	// }
 
-	f := request.NewFetcher()
-	f.SetUrl("https://downloads.dlang.org/releases/2.x/2.065.0/dmd.2.065.0.osx.zip")
-	f.GetAndSaveFile("/home/moqsien/golang/src/gvcgo/goutils/dmd.2.065.0.osx.zip", true)
+	// f := request.NewFetcher()
+	// f.SetUrl("https://downloads.dlang.org/releases/2.x/2.065.0/dmd.2.065.0.osx.zip")
+	// f.GetAndSaveFile("/home/moqsien/golang/src/gvcgo/goutils/dmd.2.065.0.osx.zip", true)
+
+	cfm := confirm.NewConfirmation(confirm.WithPrompt("To continue or not?"))
+	cfm.Run()
+	ok := cfm.Result()
+	fmt.Println(ok)
 
 	// f.SetUrl("https://golang.google.cn/dl/go1.22.3.linux-amd64.tar.gz")
 	// f.GetAndSaveFile("/home/moqsien/golang/src/gvcgo/goutils/go1.22.3.linux-amd64.tar.gz", true)

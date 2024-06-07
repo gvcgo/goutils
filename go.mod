@@ -9,6 +9,7 @@ require (
 	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/harmonica v0.2.0
 	github.com/charmbracelet/lipgloss v0.8.0
+	github.com/erikgeiser/promptkit v0.9.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/go-resty/resty/v2 v2.7.0
@@ -20,7 +21,7 @@ require (
 	github.com/lucasb-eyer/go-colorful v1.2.0
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/mholt/archiver/v3 v3.5.1
-	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b
+	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.15.2
 	github.com/mwitkow/go-http-dialer v0.0.0-20161116154839-378f744fb2b8
