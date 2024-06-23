@@ -7,9 +7,9 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"fmt"
-	"strings"
-
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"golang.org/x/crypto/bcrypt"
+	"strings"
 )
 
 type Crypt struct {
@@ -115,4 +115,16 @@ func DecodeBase64(rawStr string) (res string) {
 		}
 	}
 	return
+}
+
+func (that *Crypt) BcryptHash(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashedPassword), nil
+}
+
+func (that *Crypt) BcryptVerify(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
