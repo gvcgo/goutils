@@ -370,7 +370,8 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 				content_length = res.RawResponse.ContentLength
 			}
 		} else {
-			gprint.PrintError("%+v", err)
+			// gprint.PrintError("%+v", err)
+			that.GetFile(localPath, force...)
 			return
 		}
 	}
