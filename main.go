@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/gvcgo/goutils/pkgs/gtea/selector"
 	"github.com/gvcgo/goutils/pkgs/gutils"
+	"github.com/gvcgo/goutils/pkgs/request"
 )
 
 type Comparable int
@@ -87,10 +85,10 @@ func main() {
 	// gtea.Run("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 	// gtea.TestDownload("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 
-	// f := request.NewFetcher()
-	// f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
-	// f.SetThreadNum(2)
-	// f.GetAndSaveFile("gvc_windows-amd64.zip", true)
+	f := request.NewFetcher()
+	f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
+	f.SetThreadNum(2)
+	f.GetAndSaveFile("gvc_windows-amd64.zip", true)
 
 	// gtui.PrintWarning("hello")
 	// gtui.PrintInfo("hello")
@@ -128,20 +126,20 @@ func main() {
 	// ipt.Run()
 	// fmt.Println(ipt.Value())
 
-	itemList := selector.NewItemList()
-	itemList.Add("win", "windows")
-	itemList.Add("linux", "linux")
-	itemList.Add("mac", "darwin")
+	// itemList := selector.NewItemList()
+	// itemList.Add("win", "windows")
+	// itemList.Add("linux", "linux")
+	// itemList.Add("mac", "darwin")
 	// sel := selector.NewSelector(itemList, selector.WithShowStatusBar(true), selector.WithTitle("Choose OS type:"), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(true))
-	sel := selector.NewSelector(
-		itemList,
-		selector.WidthEnableMulti(true),
-		selector.WithShowStatusBar(true),
-		selector.WithTitle("Choose OS type:"),
-		selector.WithEnbleInfinite(true),
-	)
-	sel.Run()
-	fmt.Println(sel.Value())
+	// sel := selector.NewSelector(
+	// 	itemList,
+	// 	selector.WidthEnableMulti(true),
+	// 	selector.WithShowStatusBar(true),
+	// 	selector.WithTitle("Choose OS type:"),
+	// 	selector.WithEnbleInfinite(true),
+	// )
+	// sel.Run()
+	// fmt.Println(sel.Value())
 
 	// s := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
 	// 	"Name: gvc",

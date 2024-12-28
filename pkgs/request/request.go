@@ -46,10 +46,18 @@ type Fetcher struct {
 	dspinner       *spinner.Spinner
 	programOpts    []tea.ProgramOption
 	fileContentLen int64
+	waitGroup      *sync.WaitGroup
+	signal         chan struct{}
 }
 
 func NewFetcher() *Fetcher {
-	return &Fetcher{client: resty.New(), proxyEnvName: "GVC_DEFAULT_PROXY", lock: &sync.Mutex{}}
+	return &Fetcher{
+		client:       resty.New(),
+		proxyEnvName: "GVC_DEFAULT_PROXY",
+		lock:         &sync.Mutex{},
+		waitGroup:    &sync.WaitGroup{},
+		signal:       make(chan struct{}),
+	}
 }
 
 func (that *Fetcher) setHeaders() {
@@ -115,7 +123,7 @@ func (that *Fetcher) setProxy() {
 				gprint.PrintError("%+v", err)
 			}
 		default:
-			gprint.PrintError(fmt.Sprintf("Unsupported proxy: %s", that.Proxy))
+			gprint.PrintError("Unsupported proxy: %s", that.Proxy)
 		}
 	}
 }
@@ -176,6 +184,7 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 	return
 }
 
+// use spinner
 func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 	if that.client == nil {
 		that.client = resty.New()
@@ -203,7 +212,7 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 		outFile, err := os.Create(localPath)
 		if err != nil {
 			that.dspinner.Quit()
-			gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			gprint.PrintError("Cannot open file: %+v", err)
 			return
 		}
 		defer utils.Closeq(outFile)
@@ -235,15 +244,17 @@ func (that *Fetcher) singleDownload(localPath string) (size int64) {
 	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(localPath)
 		if err != nil {
-			gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			gprint.PrintError("Cannot open file: %+v", err)
 			return
 		}
 		defer utils.Closeq(outFile)
 		defer utils.Closeq(res.RawResponse.Body)
 		size = that.dbar.Copy(res.RawResponse.Body, outFile)
+		that.size = size
 	} else {
 		fmt.Println(err)
 	}
+	that.signal <- struct{}{}
 	return
 }
 
@@ -290,7 +301,7 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 	if res, err := client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(that.getPartFileName(localPath, id))
 		if err != nil {
-			gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+			gprint.PrintError("Cannot open file: %+v", err)
 			return
 		}
 		defer utils.Closeq(outFile)
@@ -300,8 +311,8 @@ func (that *Fetcher) partDownload(localPath string, range_begin, range_end, id i
 		that.size += written
 		that.lock.Unlock()
 		if res.RawResponse.StatusCode != 200 && written < int64(range_end-range_begin) {
-			gprint.PrintFatal(fmt.Sprintf("Download failed, status code: %d", res.RawResponse.StatusCode))
-			gprint.PrintWarning(fmt.Sprintf("Please remove temp files manually: %s.", that.getPartDir(localPath)))
+			gprint.PrintFatal("Download failed, status code: %d", res.RawResponse.StatusCode)
+			gprint.PrintWarning("Please remove temp files manually: %s.", that.getPartDir(localPath))
 			return
 		}
 	} else {
@@ -316,19 +327,21 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 	os.Mkdir(part_dir, 0o777)
 	defer os.RemoveAll(part_dir)
 
-	var waitgroup sync.WaitGroup
-	waitgroup.Add(that.threadNum)
+	that.waitGroup = &sync.WaitGroup{}
 
 	range_init := 0
 	that.dbar.SetSweep(func() {
+		that.signal <- struct{}{}
+		time.Sleep(2 * time.Second)
 		os.RemoveAll(part_dir)
 		os.RemoveAll(localPath)
 	})
 	for i := 0; i < that.threadNum; i++ {
 		// concurrency request, i for thread id
 		id := i
+		that.waitGroup.Add(1)
 		go func(i, range_begin int) {
-			defer waitgroup.Done()
+			defer that.waitGroup.Done()
 			range_end := range_begin + part_size
 			if i == that.threadNum-1 {
 				range_end = content_size
@@ -338,10 +351,14 @@ func (that *Fetcher) multiDownload(localPath string, content_size int) error {
 
 		range_init += part_size + 1
 	}
-	waitgroup.Wait()
+
+	that.waitGroup.Wait()
 
 	// merge
 	that.mergeFile(localPath)
+
+	// signal to stop.
+	that.signal <- struct{}{}
 	return nil
 }
 
@@ -386,16 +403,21 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	}
 	that.dbar.SetTotal(content_length)
 	that.dbar.SetSweep(func() {
+		that.signal <- struct{}{}
+		time.Sleep(2 * time.Second)
 		os.RemoveAll(localPath)
 	})
 
 	go that.dbar.Run()
 
 	if that.threadNum <= 1 {
-		size = that.singleDownload(localPath)
+		go that.singleDownload(localPath)
+		<-that.signal
+		size = that.size
 	} else {
 		os.RemoveAll(that.getPartDir(localPath))
-		that.multiDownload(localPath, int(content_length))
+		go that.multiDownload(localPath, int(content_length))
+		<-that.signal
 		size = that.size
 	}
 	// wait for progress bar to complete.
