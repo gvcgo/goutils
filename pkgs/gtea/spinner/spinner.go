@@ -11,11 +11,12 @@ import (
 type errMsg error
 
 type Spinner struct {
-	spinner  spinner.Model
-	quitting bool
-	err      error
-	fileName string
-	title    string
+	spinner   spinner.Model
+	quitting  bool
+	err       error
+	fileName  string
+	title     string
+	sweepFunc func()
 }
 
 func NewSpinner() *Spinner {
@@ -37,6 +38,10 @@ func (m *Spinner) SetTitle(title string) {
 	m.title = title
 }
 
+func (m *Spinner) SetSweepFunc(f func()) {
+	m.sweepFunc = f
+}
+
 func (m *Spinner) Quit() {
 	m.quitting = true
 }
@@ -51,6 +56,9 @@ func (m *Spinner) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "q", "esc":
 			m.quitting = true
+			if m.sweepFunc != nil {
+				m.sweepFunc()
+			}
 			return m, tea.Quit
 		default:
 			return m, nil
@@ -74,9 +82,9 @@ func (m *Spinner) View() string {
 	}
 	var str string
 	if m.title == "" && m.fileName != "" {
-		str = fmt.Sprintf("\n\n %s - Downloading %s...\n\n", m.spinner.View(), m.fileName)
+		str = fmt.Sprintf("\n\n %s - Downloading %s...\n%s\n", m.spinner.View(), m.fileName, `Press "q" or "esc" to quit.`)
 	} else {
-		str = fmt.Sprintf("\n\n %s - %s...\n\n", m.spinner.View(), m.title)
+		str = fmt.Sprintf("\n\n %s - %s...\n%s\n", m.spinner.View(), m.title, `Press "q" or "esc" to quit.`)
 	}
 
 	if m.quitting {

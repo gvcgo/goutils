@@ -88,7 +88,7 @@ func main() {
 	f := request.NewFetcher()
 	f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 	f.SetThreadNum(2)
-	f.GetAndSaveFile("gvc_windows-amd64.zip", true)
+	f.GetFile("gvc_windows-amd64.zip", true)
 
 	// gtui.PrintWarning("hello")
 	// gtui.PrintInfo("hello")

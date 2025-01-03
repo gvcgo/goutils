@@ -56,14 +56,14 @@ func CopyFile(src, dst string) (written int64, err error) {
 	srcFile, err := os.Open(src)
 
 	if err != nil {
-		gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+		gprint.PrintError("Cannot open file: %+v", err)
 		return
 	}
 	defer srcFile.Close()
 
 	dstFile, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+		gprint.PrintError("Cannot open file: %+v", err)
 		return
 	}
 	defer dstFile.Close()
@@ -195,7 +195,7 @@ func CheckSum(fpath, cType, cSum string) (r bool) {
 func ComputeSum(fpath, sumType string) (sumStr string) {
 	f, err := os.Open(fpath)
 	if err != nil {
-		gprint.PrintError(fmt.Sprintf("Open file failed: %+v", err))
+		gprint.PrintError("Open file failed: %+v", err)
 		return
 	}
 	defer f.Close()
@@ -209,12 +209,12 @@ func ComputeSum(fpath, sumType string) (sumStr string) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		gprint.PrintError(fmt.Sprintf("[Crypto] %s is not supported.", sumType))
+		gprint.PrintError("[Crypto] %s is not supported.", sumType)
 		return
 	}
 
 	if _, err = io.Copy(h, f); err != nil {
-		gprint.PrintError(fmt.Sprintf("Copy file failed: %+v", err))
+		gprint.PrintError("Copy file failed: %+v", err)
 		return
 	}
 

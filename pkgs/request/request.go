@@ -207,29 +207,41 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 	}
 
 	that.dspinner.SetTitle(fmt.Sprintf("Downloading %s", that.parseFilename(localPath)))
+	that.dspinner.SetSweepFunc(func() {
+		that.signal <- struct{}{}
+		os.Remove(localPath)
+	})
 	go that.dspinner.Run()
-	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
-		outFile, err := os.Create(localPath)
-		if err != nil {
-			that.dspinner.Quit()
-			gprint.PrintError("Cannot open file: %+v", err)
-			return
-		}
-		defer utils.Closeq(outFile)
-		defer utils.Closeq(res.RawResponse.Body)
-		written, err := io.Copy(outFile, res.RawResponse.Body)
-		if err != nil {
-			that.dspinner.Quit()
+
+	go func() {
+		if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
+			outFile, err := os.Create(localPath)
+			if err != nil {
+				gprint.PrintError("Cannot open file: %+v", err)
+				that.dspinner.Quit()
+				that.signal <- struct{}{}
+				return
+			}
+			defer utils.Closeq(outFile)
+			defer utils.Closeq(res.RawResponse.Body)
+			written, err := io.Copy(outFile, res.RawResponse.Body)
+			if err != nil {
+				fmt.Println(err)
+				that.dspinner.Quit()
+				that.signal <- struct{}{}
+				return
+			}
+			size = written
+		} else {
 			fmt.Println(err)
+			that.dspinner.Quit()
+			that.signal <- struct{}{}
 			return
 		}
-		size = written
-	} else {
 		that.dspinner.Quit()
-		fmt.Println(err)
-		return
-	}
-	that.dspinner.Quit()
+	}()
+
+	<-that.signal
 
 	// wait for progress bar to complete.
 	toSleep := gconv.Int(os.Getenv(WaitBarCompleteEnv))
