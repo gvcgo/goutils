@@ -54,7 +54,7 @@ func (m *Spinner) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "esc":
+		case "q":
 			m.quitting = true
 			if m.sweepFunc != nil {
 				m.sweepFunc()
