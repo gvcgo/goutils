@@ -82,9 +82,9 @@ func (m *Spinner) View() string {
 	}
 	var str string
 	if m.title == "" && m.fileName != "" {
-		str = fmt.Sprintf("\n\n %s - Downloading %s...\n%s\n", m.spinner.View(), m.fileName, `Press "esc" to quit.`)
+		str = fmt.Sprintf("\n\n %s - Downloading %s...\n%s\n", m.spinner.View(), m.fileName, `Press "q" to quit.`)
 	} else {
-		str = fmt.Sprintf("\n\n %s - %s...\n%s\n", m.spinner.View(), m.title, `Press "esc" to quit.`)
+		str = fmt.Sprintf("\n\n %s - %s...\n%s\n", m.spinner.View(), m.title, `Press "q" to quit.`)
 	}
 
 	if m.quitting {
