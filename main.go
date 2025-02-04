@@ -86,8 +86,7 @@ func main() {
 	// gtea.TestDownload("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
 
 	f := request.NewFetcher()
-	f.SetUrl("https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip")
-	f.SetThreadNum(2)
+	f.SetUrl("https://proxy.vmr.us.kg/proxy/https://github.com/gvcgo/vmr_plugins/archive/refs/heads/main.zip")
 	f.GetFile("gvc_windows-amd64.zip", true)
 
 	// gtui.PrintWarning("hello")

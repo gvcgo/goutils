@@ -232,6 +232,7 @@ func (that *Fetcher) GetFile(localPath string, force ...bool) (size int64) {
 				return
 			}
 			size = written
+			that.signal <- struct{}{}
 		} else {
 			fmt.Println(err)
 			that.dspinner.Quit()
@@ -257,6 +258,7 @@ func (that *Fetcher) singleDownload(localPath string) (size int64) {
 		outFile, err := os.Create(localPath)
 		if err != nil {
 			gprint.PrintError("Cannot open file: %+v", err)
+			that.signal <- struct{}{}
 			return
 		}
 		defer utils.Closeq(outFile)
